@@ -17,9 +17,11 @@ public class LinkedList {
     public void printList() {
         ListNode cur = this.front;
         
+        System.out.print("    ");
         while (cur != null) {
-            System.out.print("    [" + cur.ID + "]->");
+            System.out.print("[" + cur.ID + "]->");
+            cur = cur.next;
         }
-        System.out.println();
+        System.out.println("X\n");
     }
 }

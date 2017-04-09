@@ -25,6 +25,6 @@ public class Vertex implements Comparable<Vertex> {
     
     @Override
     public int compareTo(Vertex v) {
-        return (int)(this.positionX - v.positionX);
+        return Float.compare(this.positionX, v.positionX);
     }
 }

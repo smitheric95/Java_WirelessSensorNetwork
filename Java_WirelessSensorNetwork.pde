@@ -2,9 +2,9 @@ import java.util.*;
 
 /* Globals */
 int graphSize = 500;
-String mode = "sphere";
+String mode = "square";
 int avgDegree = 32; //input form user
-int n = 6400; // number of vertices (nodes)
+int n = 15; // number of vertices (nodes)
 float rotX = 0; // rotation
 float rotY = 0;
 float zoom = 1;
@@ -15,8 +15,6 @@ int r = 100; // calculated in calculateRadius
 void setup() {
   // global n, graphSize, mode, nodeDict
     size(800, 800, P3D);
-    
-    int[] nodeDict = new int[n]; // initialize dictionary
     
     // build map
     for(int i = 0; i < n; i++) {  
@@ -67,7 +65,11 @@ void setup() {
     }// end build map
     
     // build adjacency list
-    // sweepNodes();
+    sweepNodes();
+    
+    for (int i = 0; i < n; i++) {
+        vertexDict[i].printVertex();
+    }
 }
 void draw() {
     // put matrix in center
@@ -87,12 +89,14 @@ void draw() {
     // draw nodes
     for (int i = 0; i < n; i++) {
         vertexDict[i].drawVertex(); 
-        //ellipse(vertexDict[i].positionX,vertexDict[i].positionY, r, r); // show r around vertex
+        ellipse(vertexDict[i].positionX,vertexDict[i].positionY, r, r); // show r around vertex
     }
     popMatrix();
 }
 
 void sweepNodes() {
+    long startTime = System.nanoTime();
+
     // sort dictionary based on X position
     Arrays.sort(vertexDict);
     
@@ -104,14 +108,18 @@ void sweepNodes() {
                      vertexDict[j].positionX, vertexDict[j].positionY, vertexDict[j].positionZ) <= r) {
                     
                     // add both to each other's linked lists
-                    vertexDict[i].neighbors.add(j);                       
-                    vertexDict[j].neighbors.add(i);
+                    vertexDict[i].neighbors.add(vertexDict[j].ID);                       
+                    vertexDict[j].neighbors.add(vertexDict[i].ID);
             }  
             
             j -= 1;
             
         } // end while
     } // end for
+    
+    long endTime = System.nanoTime();
+
+    System.out.println(((endTime - startTime)/1000000000) + " seconds to build adj list");  
 }             
 // returns radius of a point based average degree
 // check video to see if accurate
