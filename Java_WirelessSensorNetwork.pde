@@ -2,9 +2,9 @@ import java.util.*;
 
 /* Globals */
 int graphSize = 500;
-String mode = "square";
+String mode = "disk";
 int avgDegree = 32; //input form user
-int n = 15; // number of vertices (nodes)
+int n = 5; // number of vertices (nodes)
 float rotX = 0; // rotation
 float rotY = 0;
 float zoom = 1;
@@ -100,12 +100,17 @@ void sweepNodes() {
     // sort dictionary based on X position
     Arrays.sort(vertexDict);
     
+    // go through each vertex
     for (int i = 0; i < n; i++) {
         int j = i-1;
         
+        // if the vertex to left is within range, calculate distance
         while ((j >= 0) && (vertexDict[i].positionX - vertexDict[j].positionX <= r)) {
-            if (dist(vertexDict[i].positionX, vertexDict[i].positionY, vertexDict[i].positionZ, 
-                     vertexDict[j].positionX, vertexDict[j].positionY, vertexDict[j].positionZ) <= r) {
+            // calculate distance based off topology
+            if (mode != "sphere" && dist(vertexDict[i].positionX, vertexDict[i].positionY, vertexDict[i].positionZ, 
+                                         vertexDict[j].positionX, vertexDict[j].positionY, vertexDict[j].positionZ) <= r ||
+                mode == "sphere" && sphereDist(vertexDict[i].positionX, vertexDict[i].positionY, vertexDict[i].positionZ, 
+                                               vertexDict[j].positionX, vertexDict[j].positionY, vertexDict[j].positionZ) <= r) {
                     
                     // add both to each other's linked lists
                     vertexDict[i].neighbors.add(vertexDict[j].ID);                       
@@ -134,6 +139,11 @@ double calculateRadius() {
         return Math.sqrt( 4*avgDegree/n );
     }
 }
+
+float sphereDist(float x1, float y1, float z1, float x2, float y2, float z2) {
+    return 1.0f;
+}
+
 void mouseDragged() {
     rotX += (pmouseY-mouseY) * 0.1;
     rotY += -1 * (pmouseX-mouseX) * 0.1;
