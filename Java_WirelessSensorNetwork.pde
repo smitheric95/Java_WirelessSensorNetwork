@@ -2,14 +2,13 @@ import java.util.*;
 
 /* Globals */
 int graphSize = 500;
-String mode = "square";
+String mode = "sphere";
 int avgDegree = 32; //input form user
-int n = 100; // number of vertices (nodes)
-int rotX = 0; // rotation
-int rotY = 0;
-int count = 1;
-int zoom = 1;
-int angle = 0; // rotation with keyboard
+int n = 6400; // number of vertices (nodes)
+float rotX = 0; // rotation
+float rotY = 0;
+float zoom = 1;
+float angle = 0; // rotation with keyboard
 Vertex[] vertexDict = new Vertex[n]; // adjacency list of vertices and their neighbors
 int r = 100; // calculated in calculateRadius
 
@@ -25,8 +24,8 @@ void setup() {
         Random random = new Random();
         
         if (mode == "square") {
-            int a = random.nextInt((graphSize/2) + 1 + (graphSize/2)) - (graphSize/2);
-            int b = random.nextInt((graphSize/2) + 1 + (graphSize/2)) - (graphSize/2);
+            float a = random.nextInt((graphSize/2) + 1 + (graphSize/2)) - (graphSize/2);
+            float b = random.nextInt((graphSize/2) + 1 + (graphSize/2)) - (graphSize/2);
             
             v.positionX = a;
             v.positionY = b;
@@ -53,7 +52,7 @@ void setup() {
             // http://corysimon.github.io/articles/uniformdistn-on-sphere/
             
             float theta = (float)(2 * Math.PI * random.nextFloat());
-            float phi = (float)(Math.acos(2 * random.nextInt() - 1));
+            float phi = (float)(Math.acos(2 * random.nextFloat() - 1));
             float x = sin(phi) * cos(theta);
             float y = sin(phi) * sin(theta);
             float z = cos(phi);
@@ -64,13 +63,11 @@ void setup() {
         }
         
         vertexDict[i] = v;
-
-    // end build map
-    sweepNodes();
     
-    // for x in nodeDict:
-      //  x.printNode()
-    }
+    }// end build map
+    
+    // build adjacency list
+    // sweepNodes();
 }
 void draw() {
     // put matrix in center
@@ -87,13 +84,10 @@ void draw() {
     background(0);
     stroke(100, 0, 200);
       
-    // draw nodes till all are drawn
-    for (int i = 0; i < count; i++) {
+    // draw nodes
+    for (int i = 0; i < n; i++) {
         vertexDict[i].drawVertex(); 
-        //ellipse(nodeDict[i].positionX,nodeDict[i].positionY, r, r)
-        if (count < n){
-            count += 1;
-        }
+        //ellipse(vertexDict[i].positionX,vertexDict[i].positionY, r, r); // show r around vertex
     }
     popMatrix();
 }
@@ -133,23 +127,27 @@ double calculateRadius() {
     }
 }
 void mouseDragged() {
-    rotX += (pmouseY-mouseY) * 0.05;
-    rotY += -1 * (pmouseX-mouseX) * 0.05;
+    rotX += (pmouseY-mouseY) * 0.1;
+    rotY += -1 * (pmouseX-mouseX) * 0.1;
 }
 
 void keyPressed() {
     // https://forum.processing.org/two/discussion/2151/zoom-in-and-out
     if (keyCode == UP) {
-      zoom += .09;
+        zoom += .03;
     }
     else if (keyCode == DOWN) {
-      zoom -= .09;
+        zoom -= .03;
     }
     else if (keyCode == RIGHT) {
-      angle += .03;
+        angle += .03;
     }
     else if (keyCode == LEFT) {
-      angle -= .03;
+        angle -= .03;
+    }
+    if (key == 32) {
+        angle = rotX = rotY = 0;
+        zoom = 1;
     }
 }
     

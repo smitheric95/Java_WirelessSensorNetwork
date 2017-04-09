@@ -10,15 +10,16 @@ public class Vertex implements Comparable<Vertex> {
         this.positionX = 0;
         this.positionY = 0;
         this.positionZ = 0;
+        this.neighbors = new LinkedList();
     }
     
     public void drawVertex() {
-        // strokeWeight(3);
-        // point(this.positionX, this.positionY, this.positionZ);
+        strokeWeight(3);
+        point(this.positionX, this.positionY, this.positionZ);
     }
     
-    public void printNode() {
-        System.out.print("[" + this.ID + "]: " + this.positionX + ", " + this.positionY);
+    public void printVertex() {
+        System.out.println("[" + this.ID + "]: " + this.positionX + ", " + this.positionY);
         this.neighbors.printList();
     }
     
