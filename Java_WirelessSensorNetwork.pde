@@ -2,7 +2,7 @@ import java.util.*;
 
 /* Globals */
 int graphSize = 500;
-String mode = "disk";
+String mode = "sphere";
 int avgDegree = 32; //input form user
 int n = 5; // number of vertices (nodes)
 float rotX = 0; // rotation
@@ -67,6 +67,7 @@ void setup() {
     // build adjacency list
     sweepNodes();
     
+    // print adjacency list
     for (int i = 0; i < n; i++) {
         vertexDict[i].printVertex();
     }
@@ -84,12 +85,14 @@ void draw() {
     
     noFill();
     background(0);
+    
     stroke(100, 0, 200);
-      
     // draw nodes
     for (int i = 0; i < n; i++) {
         vertexDict[i].drawVertex(); 
-        ellipse(vertexDict[i].positionX,vertexDict[i].positionY, r, r); // show r around vertex
+        //translate(0,0,vertexDict[i].positionZ);
+        //ellipse(vertexDict[i].positionX,vertexDict[i].positionY, r, r); // show r around vertex
+        //translate(0,0,-vertexDict[i].positionZ);
     }
     popMatrix();
 }
@@ -141,7 +144,14 @@ double calculateRadius() {
 }
 
 float sphereDist(float x1, float y1, float z1, float x2, float y2, float z2) {
-    return 1.0f;
+    float w = dist(x1, y1, z1, x2, y2, z2);
+    float sphereRadius = graphSize/2;
+    
+    // calculate great circle distance
+    // http://www.had2know.com/academics/great-circle-distance-sphere-2-points.html
+    float arc = 2 * sphereRadius * (float)Math.asin((w/((2*sphereRadius))));
+    
+    return arc;
 }
 
 void mouseDragged() {

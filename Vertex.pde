@@ -19,7 +19,7 @@ public class Vertex implements Comparable<Vertex> {
     }
     
     public void printVertex() {
-        System.out.println("[" + this.ID + "]: " + this.positionX + ", " + this.positionY);
+        System.out.println("[" + this.ID + "]: " + this.positionX + ", " + this.positionY + ", " + this.positionZ);
         this.neighbors.printList();
     }
     
