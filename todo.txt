@@ -1,0 +1,2 @@
+ensure that graph types are of unit 1 size
+check math of calc radius

@@ -4,13 +4,13 @@ import java.util.*;
 int graphSize = 500;
 String mode = "sphere";
 int avgDegree = 32; //input form user
-int n = 5; // number of vertices (nodes)
+int n = 10; // number of vertices (nodes)
 float rotX = 0; // rotation
 float rotY = 0;
 float zoom = 1;
 float angle = 0; // rotation with keyboard
 Vertex[] vertexDict = new Vertex[n]; // adjacency list of vertices and their neighbors
-int r = 100; // calculated in calculateRadius
+int r = 500; // calculated in calculateRadius
 
 void setup() {
   // global n, graphSize, mode, nodeDict
@@ -68,9 +68,9 @@ void setup() {
     sweepNodes();
     
     // print adjacency list
-    for (int i = 0; i < n; i++) {
-        vertexDict[i].printVertex();
-    }
+    //for (int i = 0; i < n; i++) {
+    //    vertexDict[i].printVertex();
+    //}
 }
 void draw() {
     // put matrix in center
@@ -89,10 +89,18 @@ void draw() {
     stroke(100, 0, 200);
     // draw nodes
     for (int i = 0; i < n; i++) {
-        vertexDict[i].drawVertex(); 
-        //translate(0,0,vertexDict[i].positionZ);
-        //ellipse(vertexDict[i].positionX,vertexDict[i].positionY, r, r); // show r around vertex
-        //translate(0,0,-vertexDict[i].positionZ);
+        Vertex curVertex = vertexDict[i];
+        curVertex.drawVertex(); 
+        
+        // draw line between vertex and its neighbors
+        ListNode curNeighbor = curVertex.neighbors.front;
+        
+        while (curNeighbor != null) {
+            int index = curNeighbor.getIndex();
+            
+            line(curVertex.positionX, curVertex.positionY, curVertex.positionZ, vertexDict[index].positionX, vertexDict[index].positionY, vertexDict[index].positionZ);
+            curNeighbor = curNeighbor.getNext();
+        }
     }
     popMatrix();
 }
@@ -116,8 +124,8 @@ void sweepNodes() {
                                                vertexDict[j].positionX, vertexDict[j].positionY, vertexDict[j].positionZ) <= r) {
                     
                     // add both to each other's linked lists
-                    vertexDict[i].neighbors.add(vertexDict[j].ID);                       
-                    vertexDict[j].neighbors.add(vertexDict[i].ID);
+                    vertexDict[i].neighbors.add(vertexDict[j].ID, j);                       
+                    vertexDict[j].neighbors.add(vertexDict[i].ID, i);
             }  
             
             j -= 1;
@@ -143,12 +151,11 @@ double calculateRadius() {
     }
 }
 
+// calculate great circle distance
+// http://www.had2know.com/academics/great-circle-distance-sphere-2-points.html
 float sphereDist(float x1, float y1, float z1, float x2, float y2, float z2) {
     float w = dist(x1, y1, z1, x2, y2, z2);
     float sphereRadius = graphSize/2;
-    
-    // calculate great circle distance
-    // http://www.had2know.com/academics/great-circle-distance-sphere-2-points.html
     float arc = 2 * sphereRadius * (float)Math.asin((w/((2*sphereRadius))));
     
     return arc;
