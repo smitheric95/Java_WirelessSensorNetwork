@@ -14,7 +14,7 @@ public class Vertex implements Comparable<Vertex> {
     }
     
     public void drawVertex() {
-        strokeWeight(3);
+        strokeWeight(0.01);
         point(this.positionX, this.positionY, this.positionZ);
     }
     
