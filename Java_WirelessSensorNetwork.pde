@@ -2,12 +2,12 @@ import java.util.*;
 
 /* Globals */
 int graphSize = 500;
-String mode = "square";
+String mode = "sphere";
 int avgDegree = 128; //input form user
-int n = 100; // number of vertices (nodes)
+int n = 10000; // number of vertices (nodes)
 float rotX = 0; // rotation
 float rotY = 0;
-float zoom = 500;
+float zoom = 100;
 float angle = 0; // rotation with keyboard
 Vertex[] vertexDict = new Vertex[n]; // adjacency list of vertices and their neighbors
 double r = 0; // calculated in calculateRadius
@@ -19,6 +19,7 @@ void setup() {
     // calculate radius
     r = calculateRadius();
     println("r:" + r);
+    zoom += 200;
     
     // build map
     for(int i = 0; i < n; i++) {  
