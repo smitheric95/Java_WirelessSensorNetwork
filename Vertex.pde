@@ -1,4 +1,4 @@
-public class Vertex implements Comparable<Vertex> {
+public class Vertex {
     int ID;
     float positionX;
     float positionY;
@@ -27,16 +27,5 @@ public class Vertex implements Comparable<Vertex> {
     public void printVertex() {
         System.out.println("[" + this.ID + "]: " + this.positionX + ", " + this.positionY + ", " + this.positionZ);
         this.neighbors.printList();
-    }
-    
-    @Override
-    public int compareTo(Vertex v) {
-        if (sortByDegree) {
-            return Integer.compare(this.neighbors.getSize(), v.neighbors.getSize());
-        }
-        else {
-            sortByDegree = true;
-            return Float.compare(this.positionX, v.positionX);
-        }
     }
 }

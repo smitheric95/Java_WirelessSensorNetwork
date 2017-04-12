@@ -4,7 +4,7 @@ import java.util.*;
 int graphSize = 500;
 String mode = "sphere";
 int avgDegree = 32; //input form user
-int n = 10; // number of vertices (nodes)
+int n = 10000; // number of vertices (nodes)
 float rotX = 0; // rotation
 float rotY = 0;
 float zoom = 300;
@@ -67,12 +67,16 @@ void setup() {
     sweepNodes();
     
     // smallest last vertex ordering
-    Arrays.sort(vertexDict);
+    Arrays.sort(vertexDict, new Comparator<Vertex>() {
+        public int compare(Vertex v1, Vertex v2) {
+            return Float.compare(v1.neighbors.getSize(), v2.neighbors.getSize());
+        }
+    });
     
     // print adjacency list
-    for (int i = 0; i < n; i++) {
-        vertexDict[i].printVertex();
-    }
+    //for (int i = 0; i < n; i++) {
+    //    vertexDict[i].printVertex();
+    //}
 }
 void draw() {
     // put matrix in center
@@ -88,23 +92,13 @@ void draw() {
     noFill();
     background(0);
     
+    stroke(100, 0, 200);
+    
     // draw nodes
     for (int i = 0; i < n; i++) {
-        stroke(100, 0, 200);
-        
-        Vertex curVertex = vertexDict[i];
-        curVertex.drawVertex(); 
-        
-        // draw line between vertex and its neighbors
-        //ListNode curNeighbor = curVertex.neighbors.front;
-        //strokeWeight(3);
-        //while (curNeighbor != null) {
-        //    int index = curNeighbor.getIndex();
-        //    line(curVertex.positionX, curVertex.positionY, curVertex.positionZ, vertexDict[index].positionX, vertexDict[index].positionY, vertexDict[index].positionZ);
-            
-        //    curNeighbor = curNeighbor.getNext();
-        //}
+        vertexDict[i].drawVertex(); 
     }
+    
     popMatrix();
 }
 
@@ -112,7 +106,11 @@ void sweepNodes() {
     long startTime = System.nanoTime();
 
     // sort dictionary based on X position
-    Arrays.sort(vertexDict);
+    Arrays.sort(vertexDict, new Comparator<Vertex>() {
+        public int compare(Vertex v1, Vertex v2) {
+            return Float.compare(v1.positionX, v2.positionX);
+        }
+    });
     
     // go through each vertex
     for (int i = 0; i < n; i++) {
