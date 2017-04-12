@@ -3,11 +3,11 @@ import java.util.*;
 /* Globals */
 int graphSize = 500;
 String mode = "sphere";
-int avgDegree = 128; //input form user
-int n = 10000; // number of vertices (nodes)
+int avgDegree = 32; //input form user
+int n = 10; // number of vertices (nodes)
 float rotX = 0; // rotation
 float rotY = 0;
-float zoom = 100;
+float zoom = 300;
 float angle = 0; // rotation with keyboard
 Vertex[] vertexDict = new Vertex[n]; // adjacency list of vertices and their neighbors
 double r = 0; // calculated in calculateRadius
@@ -18,8 +18,6 @@ void setup() {
     
     // calculate radius
     r = calculateRadius();
-    println("r:" + r);
-    zoom += 200;
     
     // build map
     for(int i = 0; i < n; i++) {  
@@ -32,7 +30,6 @@ void setup() {
             
             v.positionX = a;
             v.positionY = b;
-            println(v.positionX);
         }
         else if (mode == "disk") {
             // generate random points on a disk
@@ -69,10 +66,13 @@ void setup() {
     // build adjacency list
     sweepNodes();
     
+    // smallest last vertex ordering
+    Arrays.sort(vertexDict);
+    
     // print adjacency list
-    //for (int i = 0; i < n; i++) {
-    //    vertexDict[i].printVertex();
-    //}
+    for (int i = 0; i < n; i++) {
+        vertexDict[i].printVertex();
+    }
 }
 void draw() {
     // put matrix in center
@@ -89,16 +89,13 @@ void draw() {
     background(0);
     
     // draw nodes
-    
     for (int i = 0; i < n; i++) {
-        // stroke(255);
         stroke(100, 0, 200);
         
         Vertex curVertex = vertexDict[i];
         curVertex.drawVertex(); 
         
         // draw line between vertex and its neighbors
-        
         //ListNode curNeighbor = curVertex.neighbors.front;
         //strokeWeight(3);
         //while (curNeighbor != null) {

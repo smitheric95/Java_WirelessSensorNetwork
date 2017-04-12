@@ -1,6 +1,6 @@
 public class LinkedList {
     ListNode front;
-    int size;
+    private int size;
     
     public LinkedList() {
         this.size = 0;
@@ -27,5 +27,9 @@ public class LinkedList {
     
     public ListNode getFront() {
         return this.front;
+    }
+    
+    public int getSize() {
+        return this.size;
     }
 }

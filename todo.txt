@@ -1,7 +1,2 @@
 if you need speed, get rid of edges
-no sphereDist() - just straight line
-move sphereDist() to inside of dist() to clean up that if statement around line 125
-ensure that graph types are of unit 1 size
-check math of calc radius
-scale at end
 compare sweep to brute force with small case
