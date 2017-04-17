@@ -80,9 +80,13 @@ void setup() {
     // generate colorList
     
     // start at the lowest degree 
-    int index = vertexDict.length;
+    int index = degreeDict.length;
     while (index > -1) {
-           
+        // loop through each neighbor
+        ListNode cur = degreeDict[index].neighbors.front;
+        while (cur != null) {
+            
+        }
     }
     
     // print adjacency list

@@ -25,6 +25,32 @@ public class LinkedList {
         System.out.println("X\n");
     }
     
+    // delete from list and return whether it got delted 
+    public boolean delete(int ID) {
+        // empty list
+        if (this.size == 0) 
+            return false;
+
+        ListNode cur = this.front;
+        
+        // delete head
+        if (cur.ID == ID) {
+            this.front = cur.next;
+        }
+        
+        // loop till we find node with the right ID
+        while (cur.next != null) {
+            if (cur.next.ID == ID) {
+                cur.next = cur.next.next; // delete
+                return true;
+            }
+            cur = cur.next;
+        }
+        
+        // node not found
+        return false;
+    }
+    
     public ListNode getFront() {
         return this.front;
     }
