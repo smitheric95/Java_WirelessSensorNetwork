@@ -3,13 +3,16 @@ import java.util.*;
 /* Globals */
 int graphSize = 500;
 String mode = "sphere";
-int avgDegree = 32; //input form user
-int n = 10000; // number of vertices (nodes)
+int avgDegree = 4; //input form user
+int n = 4; // number of vertices (nodes)
 float rotX = 0; // rotation
 float rotY = 0;
 float zoom = 300;
 float angle = 0; // rotation with keyboard
 Vertex[] vertexDict = new Vertex[n]; // adjacency list of vertices and their neighbors
+Vertex[] degreeDict;
+Vertex[] colorDict = new Vertex[n];
+
 double r = 0; // calculated in calculateRadius
 
 void setup() {
@@ -67,17 +70,31 @@ void setup() {
     sweepNodes();
     
     // smallest last vertex ordering
-    Arrays.sort(vertexDict, new Comparator<Vertex>() {
+    degreeDict = vertexDict; 
+    Arrays.sort(degreeDict, new Comparator<Vertex>() {
         public int compare(Vertex v1, Vertex v2) {
-            return Float.compare(v1.neighbors.getSize(), v2.neighbors.getSize());
+            return -1 * Float.compare(v1.neighbors.getSize(), v2.neighbors.getSize());
         }
     });
     
+    // generate colorList
+    
+    // start at the lowest degree 
+    int index = vertexDict.length;
+    while (index > -1) {
+           
+    }
+    
     // print adjacency list
-    //for (int i = 0; i < n; i++) {
-    //    vertexDict[i].printVertex();
-    //}
+    for (int i = 0; i < n; i++) {
+        vertexDict[i].printVertex();
+    }
+    println("------------------------");
+    for (int i = 0; i < n; i++) {
+        degreeDict[i].printVertex();
+    }
 }
+
 void draw() {
     // put matrix in center
     pushMatrix();
@@ -123,8 +140,8 @@ void sweepNodes() {
                      vertexDict[j].positionX, vertexDict[j].positionY, vertexDict[j].positionZ) <= r) {
                     
                     // add both to each other's linked lists
-                    vertexDict[i].neighbors.add(vertexDict[j].ID, j);                       
-                    vertexDict[j].neighbors.add(vertexDict[i].ID, i);
+                    vertexDict[i].neighbors.add(vertexDict[j].ID);                       
+                    vertexDict[j].neighbors.add(vertexDict[i].ID);
             }  
             
             j -= 1;

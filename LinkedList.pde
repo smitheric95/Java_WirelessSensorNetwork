@@ -7,8 +7,8 @@ public class LinkedList {
         this.front = null;
     }
     
-    public void add(int ID, int index) {
-        ListNode node = new ListNode(ID, index);
+    public void add(int ID) {
+        ListNode node = new ListNode(ID);
         node.next = this.front;
         this.front = node;
         this.size++;

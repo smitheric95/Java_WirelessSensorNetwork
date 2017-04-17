@@ -25,7 +25,7 @@ public class Vertex {
     }
     
     public void printVertex() {
-        System.out.println("[" + this.ID + "]: " + this.positionX + ", " + this.positionY + ", " + this.positionZ);
+        System.out.println("[" + this.ID + " (" + this.toString().substring(33, this.toString().length()) + ")]: " + this.positionX + ", " + this.positionY + ", " + this.positionZ);
         this.neighbors.printList();
     }
 }
