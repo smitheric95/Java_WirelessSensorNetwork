@@ -5,6 +5,7 @@ public class Vertex {
     float positionZ;
     private boolean sortByDegree;
     LinkedList neighbors;
+    boolean deleted; // pseudo delted for coloring
     
     public Vertex(int ID) {
         this.ID = ID;   
@@ -13,6 +14,7 @@ public class Vertex {
         this.positionZ = 0;
         this.sortByDegree = false;
         this.neighbors = new LinkedList();
+        this.deleted = false;
     }
     
     public int getNumNeighbors() {

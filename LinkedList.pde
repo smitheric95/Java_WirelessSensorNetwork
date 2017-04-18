@@ -1,16 +1,37 @@
 public class LinkedList {
     ListNode front;
+    ListNode back;
+    
     private int size;
     
     public LinkedList() {
         this.size = 0;
         this.front = null;
+        this.back = null;
     }
     
+    // add to front
     public void add(int ID) {
         ListNode node = new ListNode(ID);
         node.next = this.front;
         this.front = node;
+        if (this.back == null)
+            this.back = this.front;
+            
+        this.size++;
+    }
+    
+    // add directly to back
+    public void append(int ID) {
+        ListNode node = new ListNode(ID);
+        if (this.back != null)
+            this.back.next = node;
+            
+        this.back = node;
+        
+        if (this.front == null) 
+            this.front = node;
+            
         this.size++;
     }
     

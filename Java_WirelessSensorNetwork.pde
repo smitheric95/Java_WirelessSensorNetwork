@@ -11,7 +11,7 @@ float zoom = 300;
 float angle = 0; // rotation with keyboard
 Vertex[] vertexDict = new Vertex[n]; // adjacency list of vertices and their neighbors
 Integer[] degreeDict = new Integer[n];
-Vertex[] colorDict = new Vertex[n];
+LinkedList[] colorDict = new LinkedList[n]; // ordered by smallest degree last, linked list of indices in vertexDict 
 
 double r = 0; // calculated in calculateRadius
 
@@ -79,6 +79,11 @@ void setup() {
         }
     });
     
+    // initialize colorDict with sorted indices in degreeDict
+    for (int i = 0; i < n; i++) {
+        colorDict[i] = new LinkedList();
+        colorDict[i].add(degreeDict[i]); // first node will be base of colorDict
+    }
 
     print("Smallest Last Degree List: \n");for (int j = 0; j < n; j++) {vertexDict[degreeDict[j]].printVertex();}
     println("------------------------------------------------");
@@ -86,19 +91,25 @@ void setup() {
     
     
     // start at the lowest degree 
-    //int i = degreeDict.length - 1;
-    //while (i > -1) {
-    //    Vertex curVertex = degreeDict[i];
+    int i = degreeDict.length - 1;
+    while (i > -1) {
+        Vertex curVertex = vertexDict[degreeDict[i]];
         
-    //    // loop through each neighbor
-    //    ListNode curNeighbor = curVertex.neighbors.front;
-    //    while (curNeighbor != null) {
-    //        int j = curNeighbor.ID; // index in vertexDict
-    //        vertexDict[j].neighbors.delete(curVertex.ID);
-    //        curNeighbor = curNeighbor.next;
-    //    }
-    //    i--;
-    //}
+        // loop through each neighbor
+        ListNode curNeighbor = curVertex.neighbors.front;
+        while (curNeighbor != null) {
+            int j = curNeighbor.ID; // index in vertexDict
+            //if hasn't been deleted from vertexDict
+            if (!vertexDict[degreeDict[j]].deleted)
+                colorDict[i].append(curNeighbor.ID);
+                
+            curNeighbor = curNeighbor.next; 
+        }
+        
+        //delete from vertexDict
+        vertexDict[degreeDict[i]].deleted = true;
+        i--;
+    }
     
     // print adjacency list
     
@@ -109,8 +120,12 @@ void setup() {
     println("------------------------------------------------");
     print("Degree List: \n");
     for (int j = 0; j < n; j++) {
-        vertexDict[j].printVertex();
+        vertexDict[degreeDict[j]].printVertex();
     }
+    println("------------------------------------------------");
+    println("Color Dict: ");
+    for (int j = 0; j < n; j++) 
+        colorDict[j].printList();
 }
 
 void draw() {
