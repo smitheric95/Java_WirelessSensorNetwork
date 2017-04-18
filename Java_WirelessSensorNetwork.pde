@@ -3,8 +3,8 @@ import java.util.*;
 /* Globals */
 int graphSize = 500;
 String mode = "sphere";
-int avgDegree = 3; //input form user
-int n = 4; // number of vertices (nodes)
+int avgDegree = 32; //input form user
+int n = 10000; // number of vertices (nodes)
 float rotX = 0; // rotation
 float rotY = 0;
 float zoom = 300;
@@ -14,7 +14,12 @@ Integer[] degreeDict = new Integer[n];
 // ordered by smallest degree last, linked list of indices in vertexDict
 // first node is the vertex to color
 LinkedList[] colorDict = new LinkedList[n];
-
+color [] colorArr = { 
+    color(255,0,0), color(0,255,0), color(0,0,255),
+    color(255,255,0), color(0,255,255), color(255,0,255),
+    color(128,0,0), color(0,128,0), color(0,128,128)
+};
+ 
 double r = 0; // calculated in calculateRadius
 
 void setup() {
@@ -141,17 +146,17 @@ void setup() {
     }
     
     // print adjacency list
-    print("Adjacency List: \n");
-    for (int j = 0; j < n; j++)
-        vertexDict[j].printVertex();
-    println("------------------------------------------------");
-    print("Degree List: \n");
-    for (int j = 0; j < n; j++) 
-        vertexDict[degreeDict[j]].printVertex();
-    println("------------------------------------------------");
-    println("Color Dict: ");
-    for (int j = 0; j < n; j++) 
-        colorDict[j].printList();
+    //print("Adjacency List: \n");
+    //for (int j = 0; j < n; j++)
+    //    vertexDict[j].printVertex();
+    //println("------------------------------------------------");
+    //print("Degree List: \n");
+    //for (int j = 0; j < n; j++) 
+    //    vertexDict[degreeDict[j]].printVertex();
+    //println("------------------------------------------------");
+    //println("Color Dict: ");
+    //for (int j = 0; j < n; j++) 
+    //    colorDict[j].printList();
 }
 
 void draw() {
@@ -172,6 +177,10 @@ void draw() {
     
     // draw nodes
     for (int i = 0; i < n; i++) {
+        if (vertexDict[i].nodeColor < 9)
+            stroke(colorArr[vertexDict[i].nodeColor]);
+        else stroke(255,255,255);
+        
         vertexDict[i].drawVertex(); 
     }
     
