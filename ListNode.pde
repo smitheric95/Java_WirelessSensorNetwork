@@ -1,5 +1,5 @@
 public class ListNode {
-    int ID;
+    int ID; // index in vertexDict
     ListNode next;
     
     public ListNode(int ID) {

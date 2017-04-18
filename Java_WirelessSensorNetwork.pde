@@ -11,7 +11,9 @@ float zoom = 300;
 float angle = 0; // rotation with keyboard
 Vertex[] vertexDict = new Vertex[n]; // adjacency list of vertices and their neighbors
 Integer[] degreeDict = new Integer[n];
-LinkedList[] colorDict = new LinkedList[n]; // ordered by smallest degree last, linked list of indices in vertexDict 
+// ordered by smallest degree last, linked list of indices in vertexDict
+// first node is the vertex to color
+LinkedList[] colorDict = new LinkedList[n];
 
 double r = 0; // calculated in calculateRadius
 
@@ -69,8 +71,6 @@ void setup() {
     
     // build adjacency list
     sweepNodes();
-    print("Original Adjacency List: \n"); for (int j = 0; j < n; j++) {vertexDict[j].printVertex();} 
-    println("------------------------------------------------");
     
     // smallest last vertex ordering    
     Arrays.sort(degreeDict, new Comparator<Integer>() {
@@ -85,15 +85,13 @@ void setup() {
         colorDict[i].add(degreeDict[i]); // first node will be base of colorDict
     }
 
-    print("Smallest Last Degree List: \n");for (int j = 0; j < n; j++) {vertexDict[degreeDict[j]].printVertex();}
-    println("------------------------------------------------");
-    // generate colorList
+    /***** generate colorDict *****/
     
     
     // start at the lowest degree 
-    int i = degreeDict.length - 1;
-    while (i > -1) {
-        Vertex curVertex = vertexDict[degreeDict[i]];
+    int degreeIndex = degreeDict.length - 1;
+    while (degreeIndex > -1) {
+        Vertex curVertex = vertexDict[degreeDict[degreeIndex]];
         
         // loop through each neighbor
         ListNode curNeighbor = curVertex.neighbors.front;
@@ -101,18 +99,48 @@ void setup() {
             int j = curNeighbor.ID; // index in vertexDict
             //if hasn't been deleted from vertexDict
             if (!vertexDict[degreeDict[j]].deleted)
-                colorDict[i].append(curNeighbor.ID);
+                colorDict[degreeIndex].append(curNeighbor.ID);
                 
             curNeighbor = curNeighbor.next; 
         }
         
         //delete from vertexDict
-        vertexDict[degreeDict[i]].deleted = true;
-        i--;
+        vertexDict[degreeDict[degreeIndex]].deleted = true;
+        degreeIndex--;
+    }
+    
+    // set first vertex.color = 1
+    vertexDict[colorDict[0].front.ID].nodeColor = 1;
+    
+    // starting at 1, color all other nodes in colorDict
+    for (int i = 1; i < colorDict.length; i++) {
+        // make an array of the nodes' linkedlist size-1
+        int[] colorList = new int[ colorDict[i].size - 1 ];
+           
+        // initialize array
+        int count = 0;
+        ListNode curNode = colorDict[i].front.next; 
+        while (curNode != null) {
+            colorList[count] = vertexDict[curNode.ID].nodeColor;
+            if (colorList[count] == 0) println("error no color found for node");
+            curNode = curNode.next;
+            count++;
+        }
+        
+        Arrays.sort(colorList);// sort array min to max
+        
+        int curColor = 1;
+        for (int j = 0; j < colorList.length; j++) {
+            if (curColor != colorList[j]) // color found
+                break;
+            i++;
+        }
+        
+        // color the vertex
+        vertexDict[colorDict[i].front.ID].nodeColor = curColor;
     }
     
     // print adjacency list
-    
     print("Adjacency List: \n");
     for (int j = 0; j < n; j++) {
         vertexDict[j].printVertex();
