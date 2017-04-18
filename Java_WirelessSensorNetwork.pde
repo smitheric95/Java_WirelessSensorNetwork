@@ -3,14 +3,14 @@ import java.util.*;
 /* Globals */
 int graphSize = 500;
 String mode = "sphere";
-int avgDegree = 4; //input form user
+int avgDegree = 3; //input form user
 int n = 4; // number of vertices (nodes)
 float rotX = 0; // rotation
 float rotY = 0;
 float zoom = 300;
 float angle = 0; // rotation with keyboard
 Vertex[] vertexDict = new Vertex[n]; // adjacency list of vertices and their neighbors
-Vertex[] degreeDict;
+Integer[] degreeDict = new Integer[n];
 Vertex[] colorDict = new Vertex[n];
 
 double r = 0; // calculated in calculateRadius
@@ -63,39 +63,53 @@ void setup() {
         }
         
         vertexDict[i] = v;
-    
+        degreeDict[i] = i;
+        
     }// end build map
     
     // build adjacency list
     sweepNodes();
+    print("Original Adjacency List: \n"); for (int j = 0; j < n; j++) {vertexDict[j].printVertex();} 
+    println("------------------------------------------------");
     
-    // smallest last vertex ordering
-    degreeDict = vertexDict; 
-    Arrays.sort(degreeDict, new Comparator<Vertex>() {
-        public int compare(Vertex v1, Vertex v2) {
-            return -1 * Float.compare(v1.neighbors.getSize(), v2.neighbors.getSize());
+    // smallest last vertex ordering    
+    Arrays.sort(degreeDict, new Comparator<Integer>() {
+        public int compare(Integer v1, Integer v2) {
+            return -1 * Float.compare(vertexDict[v1].neighbors.getSize(), vertexDict[v2].neighbors.getSize());
         }
     });
     
+
+    print("Smallest Last Degree List: \n");for (int j = 0; j < n; j++) {vertexDict[degreeDict[j]].printVertex();}
+    println("------------------------------------------------");
     // generate colorList
     
+    
     // start at the lowest degree 
-    int index = degreeDict.length;
-    while (index > -1) {
-        // loop through each neighbor
-        ListNode cur = degreeDict[index].neighbors.front;
-        while (cur != null) {
-            
-        }
-    }
+    //int i = degreeDict.length - 1;
+    //while (i > -1) {
+    //    Vertex curVertex = degreeDict[i];
+        
+    //    // loop through each neighbor
+    //    ListNode curNeighbor = curVertex.neighbors.front;
+    //    while (curNeighbor != null) {
+    //        int j = curNeighbor.ID; // index in vertexDict
+    //        vertexDict[j].neighbors.delete(curVertex.ID);
+    //        curNeighbor = curNeighbor.next;
+    //    }
+    //    i--;
+    //}
     
     // print adjacency list
-    for (int i = 0; i < n; i++) {
-        vertexDict[i].printVertex();
+    
+    print("Adjacency List: \n");
+    for (int j = 0; j < n; j++) {
+        vertexDict[j].printVertex();
     }
-    println("------------------------");
-    for (int i = 0; i < n; i++) {
-        degreeDict[i].printVertex();
+    println("------------------------------------------------");
+    print("Degree List: \n");
+    for (int j = 0; j < n; j++) {
+        vertexDict[j].printVertex();
     }
 }
 
@@ -156,6 +170,14 @@ void sweepNodes() {
     long endTime = System.nanoTime();
 
     println(((endTime - startTime)/1000000000) + " seconds to build adj list");  
+    
+    // sort dictionary based on ID again
+    Arrays.sort(vertexDict, new Comparator<Vertex>() {
+        public int compare(Vertex v1, Vertex v2) {
+            return Float.compare(v1.ID, v2.ID);
+        }
+    });
+    
 }             
 // returns radius of a point based average degree
 // check video to see if accurate
