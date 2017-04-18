@@ -108,6 +108,38 @@ void setup() {
         vertexDict[degreeDict[degreeIndex]].deleted = true;
         degreeIndex--;
     }
+        
+    // set first vertex.color = 1
+    vertexDict[colorDict[0].front.ID].nodeColor = 1;
+    
+    // starting at 1, color all other nodes in colorDict
+    for (int i = 1; i < colorDict.length; i++) { //<>//
+        // make an array of the nodes' linkedlist size-1
+        int[] colorList = new int[ colorDict[i].size - 1 ];
+           
+        // initialize array
+        int count = 0;
+        ListNode curNode = colorDict[i].front.next; 
+        while (curNode != null) {
+            colorList[count] = vertexDict[curNode.ID].nodeColor;
+            if (colorList[count] == 0) println("error no color found for node: " + vertexDict[curNode.ID].ID);
+            curNode = curNode.next;
+            count++;
+        }
+        
+        Arrays.sort(colorList);// sort array min to max
+        
+        int curColor = 1;
+        for (int j = 0; j < colorList.length; j++) {
+            if (curColor != colorList[j]) // color found
+                break;
+            curColor++;
+        }
+        
+        // color the vertex
+        vertexDict[colorDict[i].front.ID].nodeColor = curColor;
+    }
+    
     // print adjacency list
     print("Adjacency List: \n");
     for (int j = 0; j < n; j++)
@@ -120,38 +152,6 @@ void setup() {
     println("Color Dict: ");
     for (int j = 0; j < n; j++) 
         colorDict[j].printList();
-        
-    // set first vertex.color = 1
-    vertexDict[colorDict[0].front.ID].nodeColor = 1;
-    
-    // starting at 1, color all other nodes in colorDict
-    for (int i = 1; i < colorDict.length; i++) {
-        // make an array of the nodes' linkedlist size-1
-        int[] colorList = new int[ colorDict[i].size - 1 ];
-           
-        // initialize array
-        int count = 0;
-        ListNode curNode = colorDict[i].front.next; 
-        while (curNode != null) {
-            colorList[count] = vertexDict[curNode.ID].nodeColor;
-            if (colorList[count] == 0) println("error no color found for node");
-            curNode = curNode.next;
-            count++;
-        }
-        
-        Arrays.sort(colorList);// sort array min to max
-        
-        int curColor = 1;
-        for (int j = 0; j < colorList.length; j++) {
-            if (curColor != colorList[j]) // color found
-                break;
-            i++;
-        }
-        
-        // color the vertex
-        vertexDict[colorDict[i].front.ID].nodeColor = curColor;
-    }
-   
 }
 
 void draw() {
