@@ -98,7 +98,7 @@ void setup() {
         while (curNeighbor != null) {
             int j = curNeighbor.ID; // index in vertexDict
             //if hasn't been deleted from vertexDict
-            if (!vertexDict[degreeDict[j]].deleted)
+            if (!vertexDict[j].deleted)
                 colorDict[degreeIndex].append(curNeighbor.ID);
                 
             curNeighbor = curNeighbor.next; 
@@ -108,7 +108,19 @@ void setup() {
         vertexDict[degreeDict[degreeIndex]].deleted = true;
         degreeIndex--;
     }
-    
+    // print adjacency list
+    print("Adjacency List: \n");
+    for (int j = 0; j < n; j++)
+        vertexDict[j].printVertex();
+    println("------------------------------------------------");
+    print("Degree List: \n");
+    for (int j = 0; j < n; j++) 
+        vertexDict[degreeDict[j]].printVertex();
+    println("------------------------------------------------");
+    println("Color Dict: ");
+    for (int j = 0; j < n; j++) 
+        colorDict[j].printList();
+        
     // set first vertex.color = 1
     vertexDict[colorDict[0].front.ID].nodeColor = 1;
     
@@ -139,21 +151,7 @@ void setup() {
         // color the vertex
         vertexDict[colorDict[i].front.ID].nodeColor = curColor;
     }
-    
-    // print adjacency list
-    print("Adjacency List: \n");
-    for (int j = 0; j < n; j++) {
-        vertexDict[j].printVertex();
-    }
-    println("------------------------------------------------");
-    print("Degree List: \n");
-    for (int j = 0; j < n; j++) {
-        vertexDict[degreeDict[j]].printVertex();
-    }
-    println("------------------------------------------------");
-    println("Color Dict: ");
-    for (int j = 0; j < n; j++) 
-        colorDict[j].printList();
+   
 }
 
 void draw() {
