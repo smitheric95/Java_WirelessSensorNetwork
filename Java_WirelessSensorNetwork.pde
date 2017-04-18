@@ -2,9 +2,9 @@ import java.util.*;
 
 /* Globals */
 int graphSize = 500;
-String mode = "sphere";
-int avgDegree = 32; //input form user
-int n = 10000; // number of vertices (nodes)
+String mode = "square";
+int avgDegree = 8; //input form user
+int n = 100; // number of vertices (nodes)
 float rotX = 0; // rotation
 float rotY = 0;
 float zoom = 300;
@@ -180,8 +180,19 @@ void draw() {
         if (vertexDict[i].nodeColor < 9)
             stroke(colorArr[vertexDict[i].nodeColor]);
         else stroke(255,255,255);
+       
+        Vertex curVertex = vertexDict[i];
+        curVertex.drawVertex(); 
         
-        vertexDict[i].drawVertex(); 
+        // draw line between vertex and its neighbors
+        //ListNode curNeighbor = curVertex.neighbors.front;
+        //stroke(255,255,255);
+        //strokeWeight(0.0005);
+        //while (curNeighbor != null) {
+        //    int index = curNeighbor.ID;
+        //    line(curVertex.positionX, curVertex.positionY, curVertex.positionZ, vertexDict[index].positionX, vertexDict[index].positionY, vertexDict[index].positionZ);
+        //    curNeighbor = curNeighbor.getNext();
+        //}
     }
     
     popMatrix();

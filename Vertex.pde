@@ -24,7 +24,7 @@ public class Vertex {
     }
     
     public void drawVertex() {
-        strokeWeight(0.01);
+        strokeWeight(0.03);
         point(this.positionX, this.positionY, this.positionZ);
     }
     
