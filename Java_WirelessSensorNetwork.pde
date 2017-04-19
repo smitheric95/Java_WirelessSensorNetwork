@@ -4,7 +4,7 @@ import java.util.*;
 int graphSize = 500;
 String mode = "square";
 int avgDegree = 3; //input form user
-int n = 100; // number of vertices (nodes)
+int n = 10000; // number of vertices (nodes)
 float rotX = 0; // rotation
 float rotY = 0;
 float zoom = 300;
@@ -130,18 +130,15 @@ void setup() {
             count++;
         }
         
-        Arrays.sort(colorList);// sort array min to max
-        
-        int curColor = 1;
-        for (int j = 0; j < colorList.length; j++) {
-            if (curColor != colorList[j]) // color found
-                break;
-            curColor++;
-        }
+        // Arrays.sort(colorList);// sort array min to max
+       
+        // find the smallest positive color
+        int curColor = firstMissingPositive(colorList);
         
         // color the vertex
         vertexDict[colorDict[i].front.ID].nodeColor = curColor;
         
+        // error if they have the same color
         ListNode colorCheck = vertexDict[colorDict[i].front.ID].neighbors.front;
         while (colorCheck != null) {
             if (vertexDict[colorCheck.ID].nodeColor == vertexDict[colorDict[i].front.ID].nodeColor)
@@ -268,6 +265,34 @@ double calculateRadius() {
     else { 
         return Math.sqrt( 4*avgDegree*1.0/n );
     }
+}
+
+// find the smallest missing element in a sorted array
+// http://www.programcreek.com/2014/05/leetcode-first-missing-positive-java/
+public int firstMissingPositive(int[] A) {
+        int n = A.length;
+ 
+        for (int i = 0; i < n; i++) {
+            while (A[i] != i + 1) {
+                if (A[i] <= 0 || A[i] >= n)
+                    break;
+ 
+                    if(A[i]==A[A[i]-1])
+                            break;
+ 
+                int temp = A[i];
+                A[i] = A[temp - 1];
+                A[temp - 1] = temp;
+            }
+        }
+ 
+        for (int i = 0; i < n; i++){
+            if (A[i] != i + 1){
+                return i + 1;
+            }
+        }    
+ 
+        return n + 1;
 }
 
 void mouseDragged() {
