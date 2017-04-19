@@ -3,7 +3,7 @@ import java.util.*;
 /* Globals */
 int graphSize = 500;
 String mode = "square";
-int avgDegree = 8; //input form user
+int avgDegree = 3; //input form user
 int n = 100; // number of vertices (nodes)
 float rotX = 0; // rotation
 float rotY = 0;
@@ -91,8 +91,6 @@ void setup() {
     }
 
     /***** generate colorDict *****/
-    
-    
     // start at the lowest degree 
     int degreeIndex = degreeDict.length - 1;
     while (degreeIndex > -1) {
@@ -143,7 +141,19 @@ void setup() {
         
         // color the vertex
         vertexDict[colorDict[i].front.ID].nodeColor = curColor;
+        
+        ListNode colorCheck = vertexDict[colorDict[i].front.ID].neighbors.front;
+        while (colorCheck != null) {
+            if (vertexDict[colorCheck.ID].nodeColor == vertexDict[colorDict[i].front.ID].nodeColor)
+                print("error!\n");
+            colorCheck = colorCheck.next;
+        }
     }
+    
+    /***** Bipartite backbone selection *****/
+    // combine colors 1 and 2
+    
+    
     
     // print adjacency list
     //print("Adjacency List: \n");
@@ -157,6 +167,7 @@ void setup() {
     //println("Color Dict: ");
     //for (int j = 0; j < n; j++) 
     //    colorDict[j].printList();
+
 }
 
 void draw() {
@@ -182,17 +193,22 @@ void draw() {
         else stroke(255,255,255);
        
         Vertex curVertex = vertexDict[i];
-        curVertex.drawVertex(); 
+        
+        if (curVertex.nodeColor == 1 || curVertex.nodeColor == 2)
+            curVertex.drawVertex(); 
         
         // draw line between vertex and its neighbors
-        //ListNode curNeighbor = curVertex.neighbors.front;
-        //stroke(255,255,255);
-        //strokeWeight(0.0005);
-        //while (curNeighbor != null) {
-        //    int index = curNeighbor.ID;
-        //    line(curVertex.positionX, curVertex.positionY, curVertex.positionZ, vertexDict[index].positionX, vertexDict[index].positionY, vertexDict[index].positionZ);
-        //    curNeighbor = curNeighbor.getNext();
-        //}
+        ListNode curNeighbor = curVertex.neighbors.front;
+        stroke(255,255,255);
+        strokeWeight(0.005);
+        while (curNeighbor != null) {
+            int index = curNeighbor.ID;
+            if ((curVertex.nodeColor == 1 && vertexDict[index].nodeColor == 2) || (curVertex.nodeColor == 2 && vertexDict[index].nodeColor == 1)
+            || (curVertex.nodeColor == 1 && vertexDict[index].nodeColor == 1) || (curVertex.nodeColor == 2 && vertexDict[index].nodeColor == 2)
+            )
+               line(curVertex.positionX, curVertex.positionY, curVertex.positionZ, vertexDict[index].positionX, vertexDict[index].positionY, vertexDict[index].positionZ);
+            curNeighbor = curNeighbor.getNext();
+        }
     }
     
     popMatrix();
@@ -244,7 +260,7 @@ void sweepNodes() {
 // check video to see if accurate
 double calculateRadius() {
     if (mode == "square") {
-        return Math.sqrt( (avgDegree*1.0/n*Math.PI) );
+        return Math.sqrt( (avgDegree*1.0/(n*Math.PI)) );
     }
     else if (mode == "disk") {
         return Math.sqrt( avgDegree*1.0/n );
