@@ -4,7 +4,7 @@ import java.util.*;
 int graphSize = 500;
 String mode = "sphere";
 int avgDegree = 64; //input form user
-int n = 16000; // number of vertices (nodes)
+int n = 100000; // number of vertices (nodes)
 float rotX = 0; // rotation
 float rotY = 0;
 float zoom = 300;
@@ -15,6 +15,10 @@ Integer[] degreeDict = new Integer[n];
 
 // first node is the vertex to color
 LinkedList[] colorDict = new LinkedList[n];
+
+// calculating four largest colors
+HashMap<Integer, Integer> colorCount = new HashMap<Integer, Integer>();  // color : number of times it occurs
+int[] largestColors = new int[4];
 
 color [] colorArr = { 
     color(255,0,0), color(0,255,0), color(0,0,255),
@@ -117,6 +121,7 @@ void setup() {
         
     // set first vertex.color = 1
     vertexDict[colorDict[0].front.ID].nodeColor = 1;
+    colorCount.put(1, 1);
     
     // starting at 1, color all other nodes in colorDict
     for (int i = 1; i < colorDict.length; i++) { //<>//
@@ -137,18 +142,19 @@ void setup() {
         
         // color the vertex
         vertexDict[colorDict[i].front.ID].nodeColor = curColor;
+        
+        // increment the count of the corresponding color
+        Integer freq = colorCount.get(curColor);
+        colorCount.put(curColor, (freq == null) ? 1 : freq +1);
     }
     
     /***** Bipartite backbone selection *****/
-    int[] c = new int[10];
-    for (int j = 0; j < n; j++) {
-        if (vertexDict[j].nodeColor < 9)
-            c[vertexDict[j].nodeColor] += 1;
-    }
-    for (int j = 0; j < 10; j++)
-        println(j + ": " + c[j]);
+    for (int j = 0; j < 50; j++)
+        println(j + ": " + colorCount.get(j));
+        
     
-    // print adjacency list
+    //println("------------------------------------------------");
+    //// print adjacency list
     //print("Adjacency List: \n");
     //for (int j = 0; j < n; j++)
     //    vertexDict[j].printVertex();
