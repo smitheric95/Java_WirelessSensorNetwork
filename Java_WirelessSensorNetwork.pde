@@ -2,9 +2,9 @@ import java.util.*;
 
 /* Globals */
 int graphSize = 500;
-String mode = "square";
-int avgDegree = 3; //input form user
-int n = 10000; // number of vertices (nodes)
+String mode = "sphere";
+int avgDegree = 64; //input form user
+int n = 16000; // number of vertices (nodes)
 float rotX = 0; // rotation
 float rotY = 0;
 float zoom = 300;
@@ -12,13 +12,17 @@ float angle = 0; // rotation with keyboard
 Vertex[] vertexDict = new Vertex[n]; // adjacency list of vertices and their neighbors
 Integer[] degreeDict = new Integer[n];
 // ordered by smallest degree last, linked list of indices in vertexDict
+
 // first node is the vertex to color
 LinkedList[] colorDict = new LinkedList[n];
+
 color [] colorArr = { 
     color(255,0,0), color(0,255,0), color(0,0,255),
     color(255,255,0), color(0,255,255), color(255,0,255),
     color(128,0,0), color(0,128,0), color(0,128,128)
 };
+
+int color1 = 1, color2 = 2;
  
 double r = 0; // calculated in calculateRadius
 
@@ -71,7 +75,6 @@ void setup() {
         
         vertexDict[i] = v;
         degreeDict[i] = i;
-        
     }// end build map
     
     // build adjacency list
@@ -125,32 +128,25 @@ void setup() {
         ListNode curNode = colorDict[i].front.next; 
         while (curNode != null) {
             colorList[count] = vertexDict[curNode.ID].nodeColor;
-            if (colorList[count] == 0) println("error no color found for node: " + vertexDict[curNode.ID].ID);
             curNode = curNode.next;
             count++;
         }
-        
-        // Arrays.sort(colorList);// sort array min to max
-       
+               
         // find the smallest positive color
         int curColor = firstMissingPositive(colorList);
         
         // color the vertex
         vertexDict[colorDict[i].front.ID].nodeColor = curColor;
-        
-        // error if they have the same color
-        ListNode colorCheck = vertexDict[colorDict[i].front.ID].neighbors.front;
-        while (colorCheck != null) {
-            if (vertexDict[colorCheck.ID].nodeColor == vertexDict[colorDict[i].front.ID].nodeColor)
-                print("error!\n");
-            colorCheck = colorCheck.next;
-        }
     }
     
     /***** Bipartite backbone selection *****/
-    // combine colors 1 and 2
-    
-    
+    int[] c = new int[10];
+    for (int j = 0; j < n; j++) {
+        if (vertexDict[j].nodeColor < 9)
+            c[vertexDict[j].nodeColor] += 1;
+    }
+    for (int j = 0; j < 10; j++)
+        println(j + ": " + c[j]);
     
     // print adjacency list
     //print("Adjacency List: \n");
@@ -191,7 +187,7 @@ void draw() {
        
         Vertex curVertex = vertexDict[i];
         
-        if (curVertex.nodeColor == 1 || curVertex.nodeColor == 2)
+        if (curVertex.nodeColor == color1 || curVertex.nodeColor == color2)
             curVertex.drawVertex(); 
         
         // draw line between vertex and its neighbors
@@ -200,9 +196,7 @@ void draw() {
         strokeWeight(0.005);
         while (curNeighbor != null) {
             int index = curNeighbor.ID;
-            if ((curVertex.nodeColor == 1 && vertexDict[index].nodeColor == 2) || (curVertex.nodeColor == 2 && vertexDict[index].nodeColor == 1)
-            || (curVertex.nodeColor == 1 && vertexDict[index].nodeColor == 1) || (curVertex.nodeColor == 2 && vertexDict[index].nodeColor == 2)
-            )
+            if ((curVertex.nodeColor == color1 && vertexDict[index].nodeColor == color2) || (curVertex.nodeColor == color2 && vertexDict[index].nodeColor == color1))
                line(curVertex.positionX, curVertex.positionY, curVertex.positionZ, vertexDict[index].positionX, vertexDict[index].positionY, vertexDict[index].positionZ);
             curNeighbor = curNeighbor.getNext();
         }

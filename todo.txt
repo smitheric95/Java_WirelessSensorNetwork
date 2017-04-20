@@ -1,2 +1,4 @@
-if you need speed, get rid of edges
-compare sweep to brute force with small case
+have infinite amount of colors
+	- rgb to be determined later (only need 2... maybe 2)
+
+bipartite backbone selection (see notes)
