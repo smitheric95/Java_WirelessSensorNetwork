@@ -3,8 +3,8 @@ import java.util.*;
 /* Globals */
 int graphSize = 500;
 String mode = "sphere";
-int avgDegree = 64; //input form user
-int n = 1000; // number of vertices (nodes)
+int avgDegree = 2; //input form user
+int n = 10; // number of vertices (nodes)
 float rotX = 0; // rotation
 float rotY = 0;
 float zoom = 300;
@@ -124,7 +124,7 @@ void setup() {
     colorCount.put(1, 1);
     
     // starting at 1, color all other nodes in colorDict
-    for (int i = 1; i < colorDict.length; i++) { //<>//
+    for (int i = 1; i < colorDict.length; i++) {
         // make an array of the nodes' linkedlist size-1
         int[] colorList = new int[ colorDict[i].size - 1 ];
            
@@ -153,21 +153,21 @@ void setup() {
 
     colorCount = sortByValues(colorCount); 
     
-    System.out.println("After Sorting:");
-    Set set = colorCount.entrySet();
-    Iterator iterator = set.iterator();
-    while(iterator.hasNext()) {
-        Map.Entry me = (Map.Entry)iterator.next();
-        System.out.print(me.getKey() + ": ");
-        System.out.println(me.getValue());
-    }
+    //Set set = colorCount.entrySet();
+    //Iterator iterator = set.iterator();
     
+    //while(iterator.hasNext()) {
+    //    Map.Entry c = (Map.Entry)iterator.next();
+    //    System.out.print(c.getKey() + ": ");
+    //    System.out.println(c.getValue());
+    //}
     
-    //println("------------------------------------------------");
-    //// print adjacency list
-    //print("Adjacency List: \n");
-    //for (int j = 0; j < n; j++)
-    //    vertexDict[j].printVertex();
+    println();
+    println("------------------------------------------------");
+    //print adjacency list
+    print("Adjacency List: \n");
+    for (int j = 0; j < n; j++)
+        vertexDict[j].printVertex();
     //println("------------------------------------------------");
     //print("Degree List: \n");
     //for (int j = 0; j < n; j++) 
@@ -176,7 +176,8 @@ void setup() {
     //println("Color Dict: ");
     //for (int j = 0; j < n; j++) 
     //    colorDict[j].printList();
-
+    
+    BFS(0);
 }
 
 void draw() {
@@ -274,6 +275,34 @@ double calculateRadius() {
     }
     else { 
         return Math.sqrt( 4*avgDegree*1.0/n );
+    }
+}
+
+// prints BFS traversal on an adjacency list
+// source: http://www.geeksforgeeks.org/breadth-first-traversal-for-a-graph/
+void BFS(int v) {
+    java.util.LinkedList<Integer> queue = new java.util.LinkedList<Integer>(); //<>//
+    
+    // mark the current node as visited and enqueue it
+    vertexDict[v].visited = true;
+    queue.add(v);
+    
+    while (queue.size() != 0) {
+        // Dequeue a vertex from queue and print it
+        v = queue.poll();
+        print(v + " ");
+        
+        /* Get all adjacent vertices of the dequeued vertex s
+        If a adjacent has not been visited, then mark it
+        visited and enqueue it */
+        ListNode curNode = vertexDict[v].neighbors.front; //<>//
+        while (curNode != null) {
+            if (!vertexDict[curNode.ID].visited) {
+                vertexDict[curNode.ID].visited = true;
+                queue.add(curNode.ID);
+            }
+            curNode = curNode.next;
+        }
     }
 }
 
