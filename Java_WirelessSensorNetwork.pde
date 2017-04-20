@@ -4,7 +4,7 @@ import java.util.*;
 int graphSize = 500;
 String mode = "sphere";
 int avgDegree = 64; //input form user
-int n = 100000; // number of vertices (nodes)
+int n = 1000; // number of vertices (nodes)
 float rotX = 0; // rotation
 float rotY = 0;
 float zoom = 300;
@@ -149,9 +149,19 @@ void setup() {
     }
     
     /***** Bipartite backbone selection *****/
-    for (int j = 0; j < 50; j++)
-        println(j + ": " + colorCount.get(j));
-        
+    // sort the occurences of color
+
+    colorCount = sortByValues(colorCount); 
+    
+    System.out.println("After Sorting:");
+    Set set = colorCount.entrySet();
+    Iterator iterator = set.iterator();
+    while(iterator.hasNext()) {
+        Map.Entry me = (Map.Entry)iterator.next();
+        System.out.print(me.getKey() + ": ");
+        System.out.println(me.getValue());
+    }
+    
     
     //println("------------------------------------------------");
     //// print adjacency list
@@ -294,6 +304,28 @@ public int firstMissingPositive(int[] A) {
  
         return n + 1;
 }
+
+// sort HashMap by value
+// source: http://beginnersbook.com/2013/12/how-to-sort-hashmap-in-java-by-keys-and-values/
+private static HashMap sortByValues(HashMap map) { 
+       List list = new java.util.LinkedList(map.entrySet());
+       // Defined Custom Comparator here
+       Collections.sort(list, new Comparator() {
+            public int compare(Object o1, Object o2) {
+               return -1 * ((Comparable) ((Map.Entry) (o1)).getValue())
+                  .compareTo(((Map.Entry) (o2)).getValue());
+            }
+       });
+
+       // Here I am copying the sorted list in HashMap
+       // using LinkedHashMap to preserve the insertion order
+       HashMap sortedHashMap = new LinkedHashMap();
+       for (Iterator it = list.iterator(); it.hasNext();) {
+              Map.Entry entry = (Map.Entry) it.next();
+              sortedHashMap.put(entry.getKey(), entry.getValue());
+       } 
+       return sortedHashMap;
+  }
 
 void mouseDragged() {
     rotX += (pmouseY-mouseY) * 0.1;
