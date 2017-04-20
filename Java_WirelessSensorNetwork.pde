@@ -3,8 +3,8 @@ import java.util.*;
 /* Globals */
 int graphSize = 500;
 String mode = "sphere";
-int avgDegree = 2; //input form user
-int n = 10; // number of vertices (nodes)
+int avgDegree = 20; //input form user
+int n = 1000; // number of vertices (nodes)
 float rotX = 0; // rotation
 float rotY = 0;
 float zoom = 300;
@@ -150,24 +150,24 @@ void setup() {
     
     /***** Bipartite backbone selection *****/
     // sort the occurences of color
-
     colorCount = sortByValues(colorCount); 
     
-    //Set set = colorCount.entrySet();
-    //Iterator iterator = set.iterator();
-    
-    //while(iterator.hasNext()) {
-    //    Map.Entry c = (Map.Entry)iterator.next();
-    //    System.out.print(c.getKey() + ": ");
-    //    System.out.println(c.getValue());
-    //}
+    // find the four largest colors - store in largestColors
+    Set set = colorCount.entrySet();
+    Iterator iterator = set.iterator();
+    int itCount = 0;
+    while (iterator.hasNext() && itCount < 4) {
+        Map.Entry c = (Map.Entry)iterator.next();
+        largestColors[itCount] = (int)c.getKey();
+        itCount++;
+    }
     
     println();
     println("------------------------------------------------");
     //print adjacency list
-    print("Adjacency List: \n");
-    for (int j = 0; j < n; j++)
-        vertexDict[j].printVertex();
+    //print("Adjacency List: \n");
+    //for (int j = 0; j < n; j++)
+    //    vertexDict[j].printVertex();
     //println("------------------------------------------------");
     //print("Degree List: \n");
     //for (int j = 0; j < n; j++) 
@@ -176,8 +176,8 @@ void setup() {
     //println("Color Dict: ");
     //for (int j = 0; j < n; j++) 
     //    colorDict[j].printList();
-    
-    BFS(0);
+    for (int j = 0; j < largestColors.length; j++) println(largestColors[j]);
+    //BFS(0);
 }
 
 void draw() {
@@ -280,7 +280,7 @@ double calculateRadius() {
 
 // prints BFS traversal on an adjacency list
 // source: http://www.geeksforgeeks.org/breadth-first-traversal-for-a-graph/
-void BFS(int v) {
+void BFS(int v) { //<>//
     java.util.LinkedList<Integer> queue = new java.util.LinkedList<Integer>(); //<>//
     
     // mark the current node as visited and enqueue it
@@ -294,7 +294,7 @@ void BFS(int v) {
         
         /* Get all adjacent vertices of the dequeued vertex s
         If a adjacent has not been visited, then mark it
-        visited and enqueue it */
+        visited and enqueue it */ //<>//
         ListNode curNode = vertexDict[v].neighbors.front; //<>//
         while (curNode != null) {
             if (!vertexDict[curNode.ID].visited) {

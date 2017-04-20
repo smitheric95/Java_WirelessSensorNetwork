@@ -1,7 +1,7 @@
 public class LinkedList {
     ListNode front;
     ListNode back;
-    
+	
     private int size;
     
     public LinkedList() {
