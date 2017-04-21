@@ -212,9 +212,11 @@ void setup() {
                        curStarterNode++;
             
             int curSize = BFS(curStarterNode, curColor1, curColor2);
-            
-            // if curSize is the largesst so far, remember starting node and largest size
+            println("size: " + curSize);
+            // if curSize is the largest so far, remember starting node and largest size
             if (curSize > curLargestSize[0]) { //<>//
+                curLargestSize[1] = curLargestSize[0];
+                curLargestStarterNode[1] = curLargestStarterNode[0];
                 curLargestSize[0] = curSize;
                 curLargestStarterNode[0] = curStarterNode;
             }
