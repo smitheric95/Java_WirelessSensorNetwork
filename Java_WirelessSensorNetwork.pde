@@ -4,7 +4,7 @@ import java.util.*;
 int graphSize = 500;
 String mode = "sphere";
 int avgDegree = 3; //input form user
-int n = 5; // number of vertices (nodes)
+int n = 10; // number of vertices (nodes)
 float rotX = 0; // rotation
 float rotY = 0;
 float zoom = 300;
@@ -166,7 +166,7 @@ void setup() {
     while (iterator.hasNext() && itCount < numLargestColors) {
         Map.Entry c = (Map.Entry)iterator.next();
         largestColors[itCount] = (int)c.getKey();
-        println(c.getKey() + ": " + c.getValue());
+        // println(c.getKey() + ": " + c.getValue());
         itCount++;
     }
     
@@ -188,39 +188,16 @@ void setup() {
         c1++;
     }
     
-    //println();
-    //println("------------------------------------------------");
-    ////print adjacency list
-    //print("Adjacency List: \n");
-    //for (int j = 0; j < n; j++)
-    //    vertexDict[j].printVertex();
-    //println("------------------------------------------------");
-    //print("Degree List: \n");
-    //for (int j = 0; j < n; j++) 
-    //    vertexDict[degreeDict[j]].printVertex();
-    //println("------------------------------------------------");
-    //println("Color Dict: ");
-    //for (int j = 0; j < n; j++) 
-    //    colorDict[j].printList();
-    //println("------------------------------------------------");
-    //println("Largest colors: ");
-    //for (int j = 0; j < largestColors.length; j++) println(largestColors[j]);
-    //println("------------------------------------------------");
-    //println("Color Combos: ");
-    //for (int k = 0; k < colorCombos.length; k++) {
-    //    for (int l = 0; l < colorCombos[k].length; l++) {
-    //        print(colorCombos[k][l] + " ");
-    //    }
-    //    println();
-    //}
-    
     // try all combinations to find two largest backbones
-    int numNodesVisited = 0, curLargestStarterNode = -1, curLargestSize = -1;
-    int[] largestStartingNodes = new int[6]; // largest starter for each color combo
+    int numNodesVisited = 0;
+    // first and second largest sizes and their starting nodes
+    int[] curLargestStarterNode = new int[2], curLargestSize = new int[2];
+    // int[] largestStartingNodes = new int[numCombos]; // largest starter for each color combo
+    // int[] largestSizes = new int[numCombos]; // largest sizes of backbones for each color combo
     
     // for each color combination, calculate the backbone 
     // (largest connected component of each bipartite subgraph)
-    for (int j = 0; j < colorCombos.length; j++) {
+    for (int j = 0; j < numCombos; j++) {
         int curColor1 = colorCombos[j][0];
         int curColor2 = colorCombos[j][1];
          // size of the bipartite subgraph = sizes of the two current colors 
@@ -236,17 +213,60 @@ void setup() {
             
             int curSize = BFS(curStarterNode, curColor1, curColor2);
             
-            // if curSize is the largets so far, remember starting node and largest size
-            if (curSize > curLargestSize) { //<>//
-                curLargestSize = curSize;
-                curLargestStarterNode = curStarterNode;
+            // if curSize is the largesst so far, remember starting node and largest size
+            if (curSize > curLargestSize[0]) { //<>//
+                curLargestSize[0] = curSize;
+                curLargestStarterNode[0] = curStarterNode;
+            }
+            else if(curSize > curLargestSize[1]) {
+                curLargestSize[1] = curSize;
+                curLargestStarterNode[1] = curStarterNode;
             }
             
             // reduce the remaining nodes to visit
             numNodesVisited += curSize;
         }
+     //   largestStartingNodes[j] = curLargestStarterNode;
     }
     
+    println("Largest subgraph starts at: " + curLargestStarterNode[0] + " with a size of: " + curLargestSize[0]); 
+    println("2nd Largest subgraph starts at: " + curLargestStarterNode[1] + " with a size of: " + curLargestSize[1]);
+    //// indices in largestSizes (and largestStartingNodes) of first and second largest subgraphs
+    //int firstLargest = 0, secondLargest = 0; 
+    
+    //// calculate 1st and 2nd largest overall
+    //for (int j = 0; j < numCombos; j++) {
+    //    if (largestSizes[i]
+    //}
+    
+    // use bfs to draw nodes and edges!!
+        // "toDraw" in the vertex class
+    
+    println();
+    println("------------------------------------------------");
+    //print adjacency list
+    print("Adjacency List: \n");
+    for (int j = 0; j < n; j++)
+        vertexDict[j].printVertex();
+    println("------------------------------------------------");
+    print("Degree List: \n");
+    for (int j = 0; j < n; j++) 
+        vertexDict[degreeDict[j]].printVertex();
+    println("------------------------------------------------");
+    println("Color Dict: ");
+    for (int j = 0; j < n; j++) 
+        colorDict[j].printList();
+    println("------------------------------------------------");
+    println("Largest colors: ");
+    for (int j = 0; j < largestColors.length; j++) println(largestColors[j]);
+    println("------------------------------------------------");
+    println("Color Combos: ");
+    for (int k = 0; k < colorCombos.length; k++) {
+        for (int l = 0; l < colorCombos[k].length; l++) {
+            print(colorCombos[k][l] + " ");
+        }
+        println();
+    }
 }
 
 void draw() {
@@ -273,7 +293,7 @@ void draw() {
        
         Vertex curVertex = vertexDict[i];
         
-        if (curVertex.nodeColor == color1 || curVertex.nodeColor == color2)
+        //if (curVertex.nodeColor == color1 || curVertex.nodeColor == color2)
             curVertex.drawVertex(); 
         
         // draw line between vertex and its neighbors
@@ -282,7 +302,7 @@ void draw() {
         strokeWeight(0.005);
         while (curNeighbor != null) {
             int index = curNeighbor.ID;
-            if ((curVertex.nodeColor == color1 && vertexDict[index].nodeColor == color2) || (curVertex.nodeColor == color2 && vertexDict[index].nodeColor == color1))
+            //if ((curVertex.nodeColor == color1 && vertexDict[index].nodeColor == color2) || (curVertex.nodeColor == color2 && vertexDict[index].nodeColor == color1))
                line(curVertex.positionX, curVertex.positionY, curVertex.positionZ, vertexDict[index].positionX, vertexDict[index].positionY, vertexDict[index].positionZ);
             curNeighbor = curNeighbor.getNext();
         }
