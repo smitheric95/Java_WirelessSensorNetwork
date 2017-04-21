@@ -3,7 +3,7 @@ import java.util.*;
 /* Globals */
 int graphSize = 500;
 String mode = "sphere";
-int avgDegree = 2; //input form user
+int avgDegree = 3; //input form user
 int n = 5; // number of vertices (nodes)
 float rotX = 0; // rotation
 float rotY = 0;
@@ -153,14 +153,14 @@ void setup() {
     // sort the occurences of color
     colorCount = sortByValues(colorCount); 
     
-    // determine the number of colors in colorCount
+    // determine the number of colors in colorCount (at most 4)
     int numLargestColors = colorCount.size();
-    if (numLargestColors < 4)
-        largestColors = new int[numLargestColors];
-    else largestColors = new int[4];
+    if (numLargestColors > 4)
+        numLargestColors = 4;
+    largestColors = new int[numLargestColors];
     
-    // find the four largest colors - store in largestColors
-    Set set = colorCount.entrySet(); //<>//
+    // find the four (at most) largest colors - store in largestColors
+    Set set = colorCount.entrySet();
     Iterator iterator = set.iterator();
     int itCount = 0;
     while (iterator.hasNext() && itCount < numLargestColors) {
@@ -175,6 +175,7 @@ void setup() {
     int numCombos = (int)choose(numLargestColors, 2);
     colorCombos = new int[numCombos][2]; // r = itCount nCr 2
     
+    // calculate the different combinations
     int r = 0, c1 = 0;
     while (c1 < numLargestColors-1) {
         int c2 = c1+1;
@@ -187,31 +188,31 @@ void setup() {
         c1++;
     }
     
-    println();
-    println("------------------------------------------------");
-    //print adjacency list
-    print("Adjacency List: \n");
-    for (int j = 0; j < n; j++)
-        vertexDict[j].printVertex();
-    println("------------------------------------------------");
-    print("Degree List: \n");
-    for (int j = 0; j < n; j++) 
-        vertexDict[degreeDict[j]].printVertex();
-    println("------------------------------------------------");
-    println("Color Dict: ");
-    for (int j = 0; j < n; j++) 
-        colorDict[j].printList();
-    println("------------------------------------------------");
-    println("Largest colors: ");
-    for (int j = 0; j < largestColors.length; j++) println(largestColors[j]);
-    println("------------------------------------------------");
-    println("Color Combos: ");
-    for (int k = 0; k < colorCombos.length; k++) {
-        for (int l = 0; l < colorCombos[k].length; l++) {
-            print(colorCombos[k][l] + " ");
-        }
-        println();
-    }
+    //println();
+    //println("------------------------------------------------");
+    ////print adjacency list
+    //print("Adjacency List: \n");
+    //for (int j = 0; j < n; j++)
+    //    vertexDict[j].printVertex();
+    //println("------------------------------------------------");
+    //print("Degree List: \n");
+    //for (int j = 0; j < n; j++) 
+    //    vertexDict[degreeDict[j]].printVertex();
+    //println("------------------------------------------------");
+    //println("Color Dict: ");
+    //for (int j = 0; j < n; j++) 
+    //    colorDict[j].printList();
+    //println("------------------------------------------------");
+    //println("Largest colors: ");
+    //for (int j = 0; j < largestColors.length; j++) println(largestColors[j]);
+    //println("------------------------------------------------");
+    //println("Color Combos: ");
+    //for (int k = 0; k < colorCombos.length; k++) {
+    //    for (int l = 0; l < colorCombos[k].length; l++) {
+    //        print(colorCombos[k][l] + " ");
+    //    }
+    //    println();
+    //}
     
     // try all combinations to find two largest backbones
     int numNodesVisited = 0, curLargestStarterNode = -1, curLargestSize = -1;
@@ -228,7 +229,7 @@ void setup() {
             // pick the node that will be the starting point of the BFS
             // (first node in vertexDict that's of color1 or 2 that hasn't been visited
             int curStarterNode = 0;
-            while (curStarterNode < vertexDict.length && (vertexDict[curStarterNode].visited || //<>//
+            while (curStarterNode < vertexDict.length && (vertexDict[curStarterNode].visited ||
                    vertexDict[curStarterNode].nodeColor != curColor1 &&
                    vertexDict[curStarterNode].nodeColor != curColor2)) 
                        curStarterNode++;
@@ -236,7 +237,7 @@ void setup() {
             int curSize = BFS(curStarterNode, curColor1, curColor2);
             
             // if curSize is the largets so far, remember starting node and largest size
-            if (curSize > curLargestSize) {
+            if (curSize > curLargestSize) { //<>//
                 curLargestSize = curSize;
                 curLargestStarterNode = curStarterNode;
             }
@@ -374,7 +375,7 @@ int BFS(int v, int c1, int c2) {
             curNode = curNode.next;
         }
     }
-    return count++;
+    return count + 1;
 }
 
 // find the smallest missing element in a sorted array
