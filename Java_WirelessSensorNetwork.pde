@@ -21,11 +21,15 @@ HashMap<Integer, Integer> colorCount = new HashMap<Integer, Integer>();  // colo
 int[] largestColors;
 int[][] colorCombos; // all possible combinations of the n most popular colors 
 
-color [] colorArr = { 
+color[] colorArr = { 
     color(255,0,0), color(0,255,0), color(0,0,255),
     color(255,255,0), color(0,255,255), color(255,0,255),
     color(128,0,0), color(0,128,0), color(0,128,128)
 };
+
+// delete later
+String[] colorNames = {"red", "green", "blue", "yellow", "turquoise", "purple"};
+
 
 int color1 = 1, color2 = 2;
  
@@ -189,11 +193,10 @@ void setup() {
     }
     
     // try all combinations to find two largest backbones
-    int numNodesVisited = 0;
     // first and second largest sizes and their starting nodes
-    int[] curLargestStarterNode = new int[2], curLargestSize = new int[2];
-    // int[] largestStartingNodes = new int[numCombos]; // largest starter for each color combo
-    // int[] largestSizes = new int[numCombos]; // largest sizes of backbones for each color combo
+    int[] largestStarterNodes = new int[2], largestSizes = new int[2];
+    int[][] largestColorCombos = new int[2][2]; // the color comination of the two largest backbones
+
     
     // for each color combination, calculate the backbone 
     // (largest connected component of each bipartite subgraph)
@@ -201,74 +204,78 @@ void setup() {
         int curColor1 = colorCombos[j][0];
         int curColor2 = colorCombos[j][1];
          // size of the bipartite subgraph = sizes of the two current colors 
-        int bipartiteSize = colorCount.get(curColor1) + colorCount.get(curColor2); 
+        int bipartiteSize = colorCount.get(curColor1) + colorCount.get(curColor2);
+        int numNodesVisited = 0;
+        
         while (numNodesVisited < bipartiteSize) {
             // pick the node that will be the starting point of the BFS
             // (first node in vertexDict that's of color1 or 2 that hasn't been visited
             int curStarterNode = 0;
-            while (curStarterNode < vertexDict.length && (vertexDict[curStarterNode].visited ||
+            while (curStarterNode < vertexDict.length && (vertexDict[curStarterNode].visited[j] ||
                    vertexDict[curStarterNode].nodeColor != curColor1 &&
                    vertexDict[curStarterNode].nodeColor != curColor2)) 
                        curStarterNode++;
             
-            int curSize = BFS(curStarterNode, curColor1, curColor2);
-            println("size: " + curSize);
+            // nodes visited in the traversal
+            int curSize = BFS(curStarterNode, j, curColor1, curColor2);
+
             // if curSize is the largest so far, remember starting node and largest size
-            if (curSize > curLargestSize[0]) { //<>//
-                curLargestSize[1] = curLargestSize[0];
-                curLargestStarterNode[1] = curLargestStarterNode[0];
-                curLargestSize[0] = curSize;
-                curLargestStarterNode[0] = curStarterNode;
+            if (curSize > largestSizes[0]) { //<>//
+                // store the previous largest as the second largest
+                largestSizes[1] = largestSizes[0];
+                largestStarterNodes[1] = largestStarterNodes[0];
+                largestColorCombos[1][0] = largestColorCombos[0][0];
+                largestColorCombos[1][1] = largestColorCombos[0][1];
+                
+                largestSizes[0] = curSize;
+                largestStarterNodes[0] = curStarterNode;
+                largestColorCombos[0][0] = curColor1;
+                largestColorCombos[0][1] = curColor2;
             }
-            else if(curSize > curLargestSize[1]) {
-                curLargestSize[1] = curSize;
-                curLargestStarterNode[1] = curStarterNode;
+            else if(curSize > largestSizes[1]) {
+                largestSizes[1] = curSize;
+                largestStarterNodes[1] = curStarterNode;
+                largestColorCombos[1][0] = curColor1;
+                largestColorCombos[1][1] = curColor2;
             }
             
             // reduce the remaining nodes to visit
             numNodesVisited += curSize;
         }
-     //   largestStartingNodes[j] = curLargestStarterNode;
     }
     
-    println("Largest subgraph starts at: " + curLargestStarterNode[0] + " with a size of: " + curLargestSize[0]); 
-    println("2nd Largest subgraph starts at: " + curLargestStarterNode[1] + " with a size of: " + curLargestSize[1]);
-    //// indices in largestSizes (and largestStartingNodes) of first and second largest subgraphs
-    //int firstLargest = 0, secondLargest = 0; 
+   
+   
+    // use BFS to draw nodes and edges
     
-    //// calculate 1st and 2nd largest overall
-    //for (int j = 0; j < numCombos; j++) {
-    //    if (largestSizes[i]
+    
+    //println();
+    //println("------------------------------------------------");
+    ////print adjacency list
+    //print("Adjacency List: \n");
+    //for (int j = 0; j < n; j++)
+    //    vertexDict[j].printVertex();
+    //println("------------------------------------------------");
+    //print("Degree List: \n");
+    //for (int j = 0; j < n; j++) 
+    //    vertexDict[degreeDict[j]].printVertex();
+    //println("------------------------------------------------");
+    //println("Color Dict: ");
+    //for (int j = 0; j < n; j++) 
+    //    colorDict[j].printList();
+    //println("------------------------------------------------");
+    //println("Largest colors: ");
+    //for (int j = 0; j < largestColors.length; j++) println(largestColors[j]);
+    //println("------------------------------------------------");
+    //println("Color Combos: ");
+    //for (int k = 0; k < colorCombos.length; k++) {
+    //    for (int l = 0; l < colorCombos[k].length; l++) {
+    //        print(colorCombos[k][l] + " ");
+    //    }
+    //    println();
     //}
-    
-    // use bfs to draw nodes and edges!!
-        // "toDraw" in the vertex class
-    
-    println();
-    println("------------------------------------------------");
-    //print adjacency list
-    print("Adjacency List: \n");
-    for (int j = 0; j < n; j++)
-        vertexDict[j].printVertex();
-    println("------------------------------------------------");
-    print("Degree List: \n");
-    for (int j = 0; j < n; j++) 
-        vertexDict[degreeDict[j]].printVertex();
-    println("------------------------------------------------");
-    println("Color Dict: ");
-    for (int j = 0; j < n; j++) 
-        colorDict[j].printList();
-    println("------------------------------------------------");
-    println("Largest colors: ");
-    for (int j = 0; j < largestColors.length; j++) println(largestColors[j]);
-    println("------------------------------------------------");
-    println("Color Combos: ");
-    for (int k = 0; k < colorCombos.length; k++) {
-        for (int l = 0; l < colorCombos[k].length; l++) {
-            print(colorCombos[k][l] + " ");
-        }
-        println();
-    }
+    println("1st Largest subgraph starts at: " + largestStarterNodes[0] + " with a size of: " + largestSizes[0] + " and of color combo of " + colorNames[largestColorCombos[0][0]] + ", " + colorNames[largestColorCombos[0][1]]); 
+    println("2nd Largest subgraph starts at: " + largestStarterNodes[1] + " with a size of: " + largestSizes[1] + " and of color combo of " + colorNames[largestColorCombos[1][0]] + ", " + colorNames[largestColorCombos[1][1]]);
 }
 
 void draw() {
@@ -371,12 +378,12 @@ double calculateRadius() {
 
 // prints BFS traversal on an adjacency list
 // edited from source: http://www.geeksforgeeks.org/breadth-first-traversal-for-a-graph/
-int BFS(int v, int c1, int c2) {
+int BFS(int v, int colorCombo, int c1, int c2) {
     java.util.LinkedList<Integer> queue = new java.util.LinkedList<Integer>(); 
     int count = 0; // number of nodes visited
     
     // mark the current node as visited and enqueue it
-    vertexDict[v].visited = true;
+    vertexDict[v].visited[colorCombo] = true;
     queue.add(v);
     
     while (queue.size() != 0) {
@@ -389,8 +396,9 @@ int BFS(int v, int c1, int c2) {
         visited and enqueue it */
         ListNode curNode = vertexDict[v].neighbors.front; 
         while (curNode != null) {
-            if (!vertexDict[curNode.ID].visited && (vertexDict[curNode.ID].nodeColor == c1 || vertexDict[curNode.ID].nodeColor == c2)) {
-                vertexDict[curNode.ID].visited = true;
+            if (!vertexDict[curNode.ID].visited[colorCombo] && (vertexDict[curNode.ID].nodeColor == c1 || vertexDict[curNode.ID].nodeColor == c2)) {
+                vertexDict[curNode.ID].visited[colorCombo] = true;
+                // println(colorCombo + " marked as visited");
                 queue.add(curNode.ID);
                 count++;
             }
@@ -489,7 +497,7 @@ void keyPressed() {
     }
     if (key == 32) {
         angle = rotX = rotY = 0;
-        zoom = 1;
+        zoom = 300;
     }
 }
     
