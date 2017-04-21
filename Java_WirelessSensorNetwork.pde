@@ -400,8 +400,7 @@ int BFS(int v, int colorCombo, int c1, int c2) {
     while (queue.size() != 0) {
         // Dequeue a vertex from queue and print it
         v = queue.poll();
-        if (colorCombo < 0)
-            println("hey");
+        
         /* Get all adjacent vertices of the dequeued vertex s
         If a adjacent has not been visited, then mark it
         visited and enqueue it */
@@ -409,15 +408,16 @@ int BFS(int v, int colorCombo, int c1, int c2) {
         while (curNode != null) {
             // if the node hasn't been visited (or it needs to be drawn) 
             // and it's the right color, mark it visited
-            if (((colorCombo > -1 && !vertexDict[curNode.ID].visited[colorCombo]) || colorCombo < 0) && (vertexDict[curNode.ID].nodeColor == c1 || vertexDict[curNode.ID].nodeColor == c2)) { //<>//
+            if (((colorCombo > -1 && !vertexDict[curNode.ID].visited[colorCombo]) || colorCombo < 0 && !vertexDict[curNode.ID].visitedWhileDrawn) && (vertexDict[curNode.ID].nodeColor == c1 || vertexDict[curNode.ID].nodeColor == c2)) { //<>//
                 // mark the node as visited
                 if (colorCombo > -1)
                     vertexDict[curNode.ID].visited[colorCombo] = true;
                 
                 // draw the node if necessary
-                if (colorCombo < 0)
+                else {
+                    vertexDict[curNode.ID].visitedWhileDrawn = true;
                     vertexDict[curNode.ID].toDraw = true;
-                    
+                }
                 queue.add(curNode.ID);
                 count++;
             }
