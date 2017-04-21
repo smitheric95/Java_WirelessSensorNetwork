@@ -3,11 +3,12 @@ public class Vertex {
     float positionX;
     float positionY;
     float positionZ;
-    private boolean sortByDegree;
     LinkedList neighbors;
+    private boolean sortByDegree;
     boolean deleted; // pseudo deleted for coloring
     int nodeColor;
-    boolean visited; // for calculating largest backbone
+    //boolean[] visited; // for calculating largest backbone
+    boolean visited;
     
     public Vertex(int ID) {
         this.ID = ID;   
@@ -18,6 +19,7 @@ public class Vertex {
         this.neighbors = new LinkedList();
         this.deleted = false;
         this.nodeColor = 0;
+        //this.visited = new boolean[6];
         this.visited = false;
     }
     

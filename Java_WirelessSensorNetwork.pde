@@ -3,8 +3,8 @@ import java.util.*;
 /* Globals */
 int graphSize = 500;
 String mode = "sphere";
-int avgDegree = 20; //input form user
-int n = 1000; // number of vertices (nodes)
+int avgDegree = 2; //input form user
+int n = 5; // number of vertices (nodes)
 float rotX = 0; // rotation
 float rotY = 0;
 float zoom = 300;
@@ -18,7 +18,8 @@ LinkedList[] colorDict = new LinkedList[n];
 
 // calculating four largest colors
 HashMap<Integer, Integer> colorCount = new HashMap<Integer, Integer>();  // color : number of times it occurs
-int[] largestColors = new int[4];
+int[] largestColors;
+int[][] colorCombos; // all possible combinations of the n most popular colors 
 
 color [] colorArr = { 
     color(255,0,0), color(0,255,0), color(0,0,255),
@@ -152,32 +153,99 @@ void setup() {
     // sort the occurences of color
     colorCount = sortByValues(colorCount); 
     
+    // determine the number of colors in colorCount
+    int numLargestColors = colorCount.size();
+    if (numLargestColors < 4)
+        largestColors = new int[numLargestColors];
+    else largestColors = new int[4];
+    
     // find the four largest colors - store in largestColors
-    Set set = colorCount.entrySet();
+    Set set = colorCount.entrySet(); //<>//
     Iterator iterator = set.iterator();
     int itCount = 0;
-    while (iterator.hasNext() && itCount < 4) {
+    while (iterator.hasNext() && itCount < numLargestColors) {
         Map.Entry c = (Map.Entry)iterator.next();
         largestColors[itCount] = (int)c.getKey();
+        println(c.getKey() + ": " + c.getValue());
         itCount++;
+    }
+    
+    // initialize colorCombos to have all possible cominations of the (at most)
+    // four most common colors: AB, AC, AD, BC, BD, CD
+    int numCombos = (int)choose(numLargestColors, 2);
+    colorCombos = new int[numCombos][2]; // r = itCount nCr 2
+    
+    int r = 0, c1 = 0;
+    while (c1 < numLargestColors-1) {
+        int c2 = c1+1;
+        while (c2 < numLargestColors) {
+            colorCombos[r][0] = largestColors[c1];
+            colorCombos[r][1] = largestColors[c2];
+            c2++;
+            r++;
+        }
+        c1++;
     }
     
     println();
     println("------------------------------------------------");
     //print adjacency list
-    //print("Adjacency List: \n");
-    //for (int j = 0; j < n; j++)
-    //    vertexDict[j].printVertex();
-    //println("------------------------------------------------");
-    //print("Degree List: \n");
-    //for (int j = 0; j < n; j++) 
-    //    vertexDict[degreeDict[j]].printVertex();
-    //println("------------------------------------------------");
-    //println("Color Dict: ");
-    //for (int j = 0; j < n; j++) 
-    //    colorDict[j].printList();
+    print("Adjacency List: \n");
+    for (int j = 0; j < n; j++)
+        vertexDict[j].printVertex();
+    println("------------------------------------------------");
+    print("Degree List: \n");
+    for (int j = 0; j < n; j++) 
+        vertexDict[degreeDict[j]].printVertex();
+    println("------------------------------------------------");
+    println("Color Dict: ");
+    for (int j = 0; j < n; j++) 
+        colorDict[j].printList();
+    println("------------------------------------------------");
+    println("Largest colors: ");
     for (int j = 0; j < largestColors.length; j++) println(largestColors[j]);
-    //BFS(0);
+    println("------------------------------------------------");
+    println("Color Combos: ");
+    for (int k = 0; k < colorCombos.length; k++) {
+        for (int l = 0; l < colorCombos[k].length; l++) {
+            print(colorCombos[k][l] + " ");
+        }
+        println();
+    }
+    
+    // try all combinations to find two largest backbones
+    int numNodesVisited = 0, curLargestStarterNode = -1, curLargestSize = -1;
+    int[] largestStartingNodes = new int[6]; // largest starter for each color combo
+    
+    // for each color combination, calculate the backbone 
+    // (largest connected component of each bipartite subgraph)
+    for (int j = 0; j < colorCombos.length; j++) {
+        int curColor1 = colorCombos[j][0];
+        int curColor2 = colorCombos[j][1];
+         // size of the bipartite subgraph = sizes of the two current colors 
+        int bipartiteSize = colorCount.get(curColor1) + colorCount.get(curColor2); 
+        while (numNodesVisited < bipartiteSize) {
+            // pick the node that will be the starting point of the BFS
+            // (first node in vertexDict that's of color1 or 2 that hasn't been visited
+            int curStarterNode = 0;
+            while (curStarterNode < vertexDict.length && (vertexDict[curStarterNode].visited || //<>//
+                   vertexDict[curStarterNode].nodeColor != curColor1 &&
+                   vertexDict[curStarterNode].nodeColor != curColor2)) 
+                       curStarterNode++;
+            
+            int curSize = BFS(curStarterNode, curColor1, curColor2);
+            
+            // if curSize is the largets so far, remember starting node and largest size
+            if (curSize > curLargestSize) {
+                curLargestSize = curSize;
+                curLargestStarterNode = curStarterNode;
+            }
+            
+            // reduce the remaining nodes to visit
+            numNodesVisited += curSize;
+        }
+    }
+    
 }
 
 void draw() {
@@ -279,9 +347,10 @@ double calculateRadius() {
 }
 
 // prints BFS traversal on an adjacency list
-// source: http://www.geeksforgeeks.org/breadth-first-traversal-for-a-graph/
-void BFS(int v) { //<>//
-    java.util.LinkedList<Integer> queue = new java.util.LinkedList<Integer>(); //<>//
+// edited from source: http://www.geeksforgeeks.org/breadth-first-traversal-for-a-graph/
+int BFS(int v, int c1, int c2) {
+    java.util.LinkedList<Integer> queue = new java.util.LinkedList<Integer>(); 
+    int count = 0; // number of nodes visited
     
     // mark the current node as visited and enqueue it
     vertexDict[v].visited = true;
@@ -290,20 +359,22 @@ void BFS(int v) { //<>//
     while (queue.size() != 0) {
         // Dequeue a vertex from queue and print it
         v = queue.poll();
-        print(v + " ");
+        // print(v + " ");
         
         /* Get all adjacent vertices of the dequeued vertex s
         If a adjacent has not been visited, then mark it
-        visited and enqueue it */ //<>//
-        ListNode curNode = vertexDict[v].neighbors.front; //<>//
+        visited and enqueue it */
+        ListNode curNode = vertexDict[v].neighbors.front; 
         while (curNode != null) {
-            if (!vertexDict[curNode.ID].visited) {
+            if (!vertexDict[curNode.ID].visited && (vertexDict[curNode.ID].nodeColor == c1 || vertexDict[curNode.ID].nodeColor == c2)) {
                 vertexDict[curNode.ID].visited = true;
                 queue.add(curNode.ID);
+                count++;
             }
             curNode = curNode.next;
         }
     }
+    return count++;
 }
 
 // find the smallest missing element in a sorted array
@@ -355,6 +426,24 @@ private static HashMap sortByValues(HashMap map) {
        } 
        return sortedHashMap;
   }
+  
+// x choose y
+// source: http://stackoverflow.com/a/1678715
+public static double choose(int x, int y) {
+    if (y < 0 || y > x) return 0;
+    if (y > x/2) {
+        // choose(n,k) == choose(n,n-k), 
+        // so this could save a little effort
+        y = x - y;
+    }
+
+    double denominator = 1.0, numerator = 1.0;
+    for (int i = 1; i <= y; i++) {
+        denominator *= i;
+        numerator *= (x + 1 - i);
+    }
+    return numerator / denominator;
+}
 
 void mouseDragged() {
     rotX += (pmouseY-mouseY) * 0.1;

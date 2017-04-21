@@ -1,1 +1,2 @@
+what if there's only two colors
 bipartite backbone selection (see notes)
