@@ -220,7 +220,7 @@ void setup() {
             int curSize = BFS(curStarterNode, j, curColor1, curColor2);
 
             // if curSize is the largest so far, remember starting node and largest size
-            if (curSize > largestSizes[0]) { //<>//
+            if (curSize > largestSizes[0]) {
                 // store the previous largest as the second largest
                 largestSizes[1] = largestSizes[0];
                 largestStarterNodes[1] = largestStarterNodes[0];
@@ -246,8 +246,16 @@ void setup() {
     
    
    
-    // use BFS to draw nodes and edges
+    //use BFS to draw nodes and edges
     
+    //for (int j = 0; j < n; j++) {
+    //    for (int k = 0; k < vertexDict[j].visited.length; k++) {
+    //            vertexDict[j].visited[k]= false;
+    //    }
+    //}
+        println("------------------------------------------------");
+
+    BFS(largestStarterNodes[0], -1, largestColorCombos[0][0], largestColorCombos[0][1]); //<>//
     
     //println();
     //println("------------------------------------------------");
@@ -302,7 +310,7 @@ void draw() {
        
         Vertex curVertex = vertexDict[i];
         
-        //if (curVertex.nodeColor == color1 || curVertex.nodeColor == color2)
+        if (curVertex.toDraw)
             curVertex.drawVertex(); 
         
         // draw line between vertex and its neighbors
@@ -312,6 +320,7 @@ void draw() {
         while (curNeighbor != null) {
             int index = curNeighbor.ID;
             //if ((curVertex.nodeColor == color1 && vertexDict[index].nodeColor == color2) || (curVertex.nodeColor == color2 && vertexDict[index].nodeColor == color1))
+            if (curVertex.toDraw && vertexDict[curNeighbor.ID].toDraw)
                line(curVertex.positionX, curVertex.positionY, curVertex.positionZ, vertexDict[index].positionX, vertexDict[index].positionY, vertexDict[index].positionZ);
             curNeighbor = curNeighbor.getNext();
         }
@@ -378,27 +387,37 @@ double calculateRadius() {
 
 // prints BFS traversal on an adjacency list
 // edited from source: http://www.geeksforgeeks.org/breadth-first-traversal-for-a-graph/
+// colorCombo == -1 if the node is too be drawn
 int BFS(int v, int colorCombo, int c1, int c2) {
     java.util.LinkedList<Integer> queue = new java.util.LinkedList<Integer>(); 
     int count = 0; // number of nodes visited
     
     // mark the current node as visited and enqueue it
-    vertexDict[v].visited[colorCombo] = true;
+    if (colorCombo > -1)
+        vertexDict[v].visited[colorCombo] = true;
     queue.add(v);
     
     while (queue.size() != 0) {
         // Dequeue a vertex from queue and print it
         v = queue.poll();
-        // print(v + " ");
-        
+        if (colorCombo < 0)
+            println("hey");
         /* Get all adjacent vertices of the dequeued vertex s
         If a adjacent has not been visited, then mark it
         visited and enqueue it */
         ListNode curNode = vertexDict[v].neighbors.front; 
         while (curNode != null) {
-            if (!vertexDict[curNode.ID].visited[colorCombo] && (vertexDict[curNode.ID].nodeColor == c1 || vertexDict[curNode.ID].nodeColor == c2)) {
-                vertexDict[curNode.ID].visited[colorCombo] = true;
-                // println(colorCombo + " marked as visited");
+            // if the node hasn't been visited (or it needs to be drawn) 
+            // and it's the right color, mark it visited
+            if (((colorCombo > -1 && !vertexDict[curNode.ID].visited[colorCombo]) || colorCombo < 0) && (vertexDict[curNode.ID].nodeColor == c1 || vertexDict[curNode.ID].nodeColor == c2)) { //<>//
+                // mark the node as visited
+                if (colorCombo > -1)
+                    vertexDict[curNode.ID].visited[colorCombo] = true;
+                
+                // draw the node if necessary
+                if (colorCombo < 0)
+                    vertexDict[curNode.ID].toDraw = true;
+                    
                 queue.add(curNode.ID);
                 count++;
             }

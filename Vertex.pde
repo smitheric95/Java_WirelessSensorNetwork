@@ -8,6 +8,7 @@ public class Vertex {
     boolean deleted; // pseudo deleted for coloring
     int nodeColor;
     boolean[] visited; // for calculating largest backbone
+    boolean toDraw; // whether or not to draw the vertex
     
     public Vertex(int ID) {
         this.ID = ID;   
@@ -19,6 +20,7 @@ public class Vertex {
         this.deleted = false;
         this.nodeColor = 0;
         this.visited = new boolean[6];
+        
     }
     
     public int getNumNeighbors() {
