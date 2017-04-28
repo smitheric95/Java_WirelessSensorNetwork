@@ -3,15 +3,14 @@ import java.util.*;
 /* Globals */
 int graphSize = 500;
 String mode = "sphere";
-int avgDegree = 3; //input form user
-int n = 10; // number of vertices (nodes)
+int avgDegree = 2; //input from user
+int n = 5; // number of vertices (nodes)
 float rotX = 0; // rotation
 float rotY = 0;
 float zoom = 300;
 float angle = 0; // rotation with keyboard
 Vertex[] vertexDict = new Vertex[n]; // adjacency list of vertices and their neighbors
-Integer[] degreeDict = new Integer[n];
-// ordered by smallest degree last, linked list of indices in vertexDict
+Integer[] degreeDict = new Integer[n]; // ordered by smallest degree last, array of indices in vertexDict
 
 // first node is the vertex to color
 LinkedList[] colorDict = new LinkedList[n];
@@ -22,37 +21,29 @@ int[] largestColors;
 int[][] colorCombos; // all possible combinations of the n most popular colors 
 
 color[] colorArr = { 
-    color(255,0,0), color(0,255,0), color(0,0,255),
-    color(255,255,0), color(0,255,255), color(255,0,255),
-    color(128,0,0), color(0,128,0), color(0,128,128)
+    color(0,0,255), color(0,255,0), 
+    color(255,0,0), color(255,255,0)
 };
 
-// delete later
-String[] colorNames = {"red", "green", "blue", "yellow", "turquoise", "purple"};
 
-
-int color1 = 1, color2 = 2;
+//int color1 = 1, color2 = 2;
  
 double r = 0; // calculated in calculateRadius
 
 void setup() {
-  // global n, graphSize, mode, nodeDict
-    size(800, 800, P3D);
+    size(900, 900, P3D); // set size of window
     
-    // calculate radius
-    r = calculateRadius();
+    /**************************** PART I *******************************/
+    r = calculateRadius(); // calculate radius based off avgDegree
     
-    // build map
+    // build map of nodes
     for(int i = 0; i < n; i++) {  
         Vertex v = new Vertex(i);
         Random random = new Random();
         
         if (mode == "square") {
-            float a = random.nextFloat() - 0.5;
-            float b = random.nextFloat() - 0.5;
-            
-            v.positionX = a;
-            v.positionY = b;
+            v.positionX = random.nextFloat() - 0.5;
+            v.positionY = random.nextFloat() - 0.5;
         }
         else if (mode == "disk") {
             // generate random points on a disk
@@ -60,19 +51,15 @@ void setup() {
             float a = random.nextFloat();
             float b = random.nextFloat();
                 
-            // ensure a is greater
-            if (b < a) {
-                float temp = b;
-                b = a;
-                a = temp;
-            }
+            // ensure a is greater by swapping
+            if (b < a) { float temp = b; b = a; a = temp; }
             
             fill(204, 102, 0);
             
             v.positionX = (float)(b*Math.cos(2*Math.PI*a/b));
             v.positionY = (float)(b*Math.sin(2*Math.PI*a/b));
         }
-        else {
+        else { // sphere
             // generate random points on the surface of a sphere
             // http://corysimon.github.io/articles/uniformdistn-on-sphere/
             float theta = (float)(2 * Math.PI * random.nextFloat());
@@ -86,9 +73,11 @@ void setup() {
         degreeDict[i] = i;
     }// end build map
     
-    // build adjacency list
+    // build adjacency list using sweep method
     sweepNodes();
+    /************************** END PART I *****************************/
     
+    /**************************** PART II *******************************/
     // smallest last vertex ordering    
     Arrays.sort(degreeDict, new Comparator<Integer>() {
         public int compare(Integer v1, Integer v2) {
@@ -247,43 +236,40 @@ void setup() {
    
    
     //use BFS to draw nodes and edges
-    
-    //for (int j = 0; j < n; j++) {
-    //    for (int k = 0; k < vertexDict[j].visited.length; k++) {
-    //            vertexDict[j].visited[k]= false;
-    //    }
-    //}
-        println("------------------------------------------------");
+    println("------------------------------------------------");
 
     BFS(largestStarterNodes[0], -1, largestColorCombos[0][0], largestColorCombos[0][1]); //<>//
+    //BFS(largestStarterNodes[1], -1, largestColorCombos[1][0], largestColorCombos[1][1]);
     
-    //println();
-    //println("------------------------------------------------");
-    ////print adjacency list
-    //print("Adjacency List: \n");
-    //for (int j = 0; j < n; j++)
-    //    vertexDict[j].printVertex();
-    //println("------------------------------------------------");
-    //print("Degree List: \n");
-    //for (int j = 0; j < n; j++) 
-    //    vertexDict[degreeDict[j]].printVertex();
-    //println("------------------------------------------------");
-    //println("Color Dict: ");
-    //for (int j = 0; j < n; j++) 
-    //    colorDict[j].printList();
-    //println("------------------------------------------------");
-    //println("Largest colors: ");
-    //for (int j = 0; j < largestColors.length; j++) println(largestColors[j]);
-    //println("------------------------------------------------");
-    //println("Color Combos: ");
-    //for (int k = 0; k < colorCombos.length; k++) {
-    //    for (int l = 0; l < colorCombos[k].length; l++) {
-    //        print(colorCombos[k][l] + " ");
-    //    }
-    //    println();
-    //}
-    println("1st Largest subgraph starts at: " + largestStarterNodes[0] + " with a size of: " + largestSizes[0] + " and of color combo of " + colorNames[largestColorCombos[0][0]] + ", " + colorNames[largestColorCombos[0][1]]); 
-    println("2nd Largest subgraph starts at: " + largestStarterNodes[1] + " with a size of: " + largestSizes[1] + " and of color combo of " + colorNames[largestColorCombos[1][0]] + ", " + colorNames[largestColorCombos[1][1]]);
+    println();
+    println("------------------------------------------------");
+    //print adjacency list
+    print("Adjacency List: \n");
+    for (int j = 0; j < n; j++)
+        vertexDict[j].printVertex();
+    println("------------------------------------------------");
+    print("Degree List: \n");
+    for (int j = 0; j < n; j++) 
+        vertexDict[degreeDict[j]].printVertex();
+    println("------------------------------------------------");
+    println("Color Dict: ");
+    for (int j = 0; j < n; j++) 
+        colorDict[j].printList();
+    println("------------------------------------------------");
+    println("Largest colors: ");
+    for (int j = 0; j < largestColors.length; j++) println(largestColors[j]);
+    println("------------------------------------------------");
+    println("Color Combos: ");
+    for (int k = 0; k < colorCombos.length; k++) {
+        for (int l = 0; l < colorCombos[k].length; l++) {
+            print(colorCombos[k][l] + " ");
+        }
+        println();
+    }
+     
+     // BUG!
+    println("1st Largest subgraph starts at: " + largestStarterNodes[0] + " with a size of: " + largestSizes[0] + " and of color combo of " + largestColorCombos[0][0] + ", " + largestColorCombos[0][1]); 
+    println("2nd Largest subgraph starts at: " + largestStarterNodes[1] + " with a size of: " + largestSizes[1] + " and of color combo of " + largestColorCombos[1][0] + ", " + largestColorCombos[1][1]);
 }
 
 void draw() {
@@ -299,23 +285,25 @@ void draw() {
     
     noFill();
     background(0);
-    
-    stroke(100, 0, 200);
-    
+        
     // draw nodes
     for (int i = 0; i < n; i++) {
-        if (vertexDict[i].nodeColor < 9)
-            stroke(colorArr[vertexDict[i].nodeColor]);
-        else stroke(255,255,255);
-       
         Vertex curVertex = vertexDict[i];
         
-        if (curVertex.toDraw)
-            curVertex.drawVertex(); 
+        if (curVertex.toDraw) {
+            // find appropriate color
+            int j;
+            for (j = 0; j < largestColors.length; j++)
+                if (largestColors[j] == curVertex.nodeColor) break;
+                    
+            // set color based off... well, color
+            stroke(colorArr[j]);
+            curVertex.drawVertex(); // draw!
+        }
         
         // draw line between vertex and its neighbors
         ListNode curNeighbor = curVertex.neighbors.front;
-        stroke(255,255,255);
+        stroke(255);
         strokeWeight(0.005);
         while (curNeighbor != null) {
             int index = curNeighbor.ID;
@@ -329,29 +317,30 @@ void draw() {
     popMatrix();
 }
 
+// build vertexDict using sweep method
 void sweepNodes() {
     long startTime = System.nanoTime();
 
     // sort dictionary based on X position
-    Arrays.sort(vertexDict, new Comparator<Vertex>() {
-        public int compare(Vertex v1, Vertex v2) {
-            return Float.compare(v1.positionX, v2.positionX);
+    Arrays.sort(degreeDict, new Comparator<Integer>() {
+        public int compare(Integer v1, Integer v2) {
+            return Float.compare(vertexDict[v1].positionX, vertexDict[v2].positionX);
         }
     });
-    
+   
     // go through each vertex
     for (int i = 0; i < n; i++) {
         int j = i-1;
         
         // if the vertex to left is within range, calculate distance
-        while ((j >= 0) && (vertexDict[i].positionX - vertexDict[j].positionX <= r)) {
+        while ((j >= 0) && (vertexDict[degreeDict[i]].positionX - vertexDict[degreeDict[j]].positionX <= r)) {
             // calculate distance based off topology
-            if (dist(vertexDict[i].positionX, vertexDict[i].positionY, vertexDict[i].positionZ, 
-                     vertexDict[j].positionX, vertexDict[j].positionY, vertexDict[j].positionZ) <= r) {
+            if (dist(vertexDict[degreeDict[i]].positionX, vertexDict[degreeDict[i]].positionY, vertexDict[degreeDict[i]].positionZ, 
+                     vertexDict[degreeDict[j]].positionX, vertexDict[degreeDict[j]].positionY, vertexDict[degreeDict[j]].positionZ) <= r) {
                     
                     // add both to each other's linked lists
-                    vertexDict[i].neighbors.add(vertexDict[j].ID);                       
-                    vertexDict[j].neighbors.add(vertexDict[i].ID);
+                    vertexDict[degreeDict[i]].neighbors.add(vertexDict[degreeDict[j]].ID);                       
+                    vertexDict[degreeDict[j]].neighbors.add(vertexDict[degreeDict[i]].ID);
             }  
             
             j -= 1;
@@ -359,17 +348,9 @@ void sweepNodes() {
         } // end while
     } // end for
     
+    // calculate time it took
     long endTime = System.nanoTime();
-
-    println(((endTime - startTime)/1000000000) + " seconds to build adj list");  
-    
-    // sort dictionary based on ID again
-    Arrays.sort(vertexDict, new Comparator<Vertex>() {
-        public int compare(Vertex v1, Vertex v2) {
-            return Float.compare(v1.ID, v2.ID);
-        }
-    });
-    
+    println(((endTime - startTime)/1000000) + " ms to build adj list");  
 }             
 // returns radius of a point based average degree
 // check video to see if accurate
