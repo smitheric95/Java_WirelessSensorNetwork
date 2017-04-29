@@ -3,8 +3,8 @@ import java.util.*;
 /* Globals */
 int graphSize = 500;
 String mode = "sphere";
-int avgDegree = 2; //input from user
-int n = 10; // number of vertices (nodes)
+int avgDegree = 3; //input from user
+int n = 15; // number of vertices (nodes)
 float rotX = 0; // rotation
 float rotY = 0;
 float zoom = 300;
@@ -331,7 +331,7 @@ void draw() {
         stroke(255);
         Vertex curVertex = vertexDict[i];
         
-        if (!userDrawFirstComponent || (userDrawFirstComponent && curVertex.toDraw[0]) || (userDrawSecondComponent && curVertex.toDraw[1])) {
+        if ((!userDrawFirstComponent && !userDrawSecondComponent) || (userDrawFirstComponent && curVertex.toDraw[0]) || (userDrawSecondComponent && curVertex.toDraw[1])) {
             // find appropriate color
             int j;
             for (j = 0; j < largestColors.length; j++)
@@ -353,16 +353,17 @@ void draw() {
             
             while (curNeighbor != null) {
                 int index = curNeighbor.ID;
-                if (!userDrawFirstComponent || (userDrawFirstComponent && curVertex.toDraw[0] && vertexDict[curNeighbor.ID].toDraw[0]) || (userDrawSecondComponent && curVertex.toDraw[1] && vertexDict[curNeighbor.ID].toDraw[1]))
+                if ((!userDrawFirstComponent && !userDrawSecondComponent) || (userDrawFirstComponent && curVertex.toDraw[0] && vertexDict[curNeighbor.ID].toDraw[0]) || (userDrawSecondComponent && curVertex.toDraw[1] && vertexDict[curNeighbor.ID].toDraw[1]))
                     line(curVertex.positionX, curVertex.positionY, curVertex.positionZ, vertexDict[index].positionX, vertexDict[index].positionY, vertexDict[index].positionZ);
                 curNeighbor = curNeighbor.getNext();
             }
             linesDrawn--;  
         }
     }
-       
+    //println("userDrawFirstComponent: " + userDrawFirstComponent + ", " + "userDrawSecondComponent: " + userDrawSecondComponent);
+
     popMatrix();
-}
+} // end draw()
 
 // build vertexDict using sweep method
 void sweepNodes() {
@@ -555,21 +556,20 @@ void keyPressed() {
     if (key == 32) { // space
         //angle = rotX = rotY = 0;
         //zoom = 300;
-        if (userDrawFirstComponent) {
+        if (userDrawSecondComponent) 
+            userDrawSecondComponent = false;
+        else if (userDrawFirstComponent) {
             userDrawSecondComponent = true;
             userDrawFirstComponent = false;
-            println("draw second!");
+            firstComponentDrawn = false;
         }
-        else if (userColorNodes) {
+        else if (userColorNodes) 
             userDrawFirstComponent = true;
-            println("draw first!");
-        }
         if (userDrawLines) 
             userColorNodes = true;
         if (nodeDrawCount < n)
             nodeDrawCount = n;
         else userDrawLines = true;
     }
-    println("userDrawFirstComponent: " + userDrawFirstComponent + ", " + "userDrawSecondComponent: " + userDrawSecondComponent);
 }
     
