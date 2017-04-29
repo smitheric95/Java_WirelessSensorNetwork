@@ -3,8 +3,8 @@ import java.util.*;
 /* Globals */
 int graphSize = 500;
 String mode = "sphere";
-int avgDegree = 12; //input from user
-int n = 3000; // number of vertices (nodes)
+int avgDegree = 2; //input from user
+int n = 10; // number of vertices (nodes)
 float rotX = 0; // rotation
 float rotY = 0;
 float zoom = 300;
@@ -20,6 +20,7 @@ HashMap<Integer, Integer> colorCount = new HashMap<Integer, Integer>();  // colo
 int[] largestColors;
 int[][] colorCombos; // all possible combinations of the n most popular colors 
 
+// NOTE: not always "color i"
 color[] colorArr = { 
     color(0,0,255), color(0,255,0), 
     color(255,0,0), color(255,255,0)
@@ -254,9 +255,10 @@ void setup() {
    
     //use BFS to draw nodes and edges
     println("------------------------------------------------");
-
+    
+    // exist for drawing only
     BFS(largestStarterNodes[0], -1, largestColorCombos[0][0], largestColorCombos[0][1]); //<>//
-    //BFS(largestStarterNodes[1], -1, largestColorCombos[1][0], largestColorCombos[1][1]);
+    BFS(largestStarterNodes[1], -2, largestColorCombos[1][0], largestColorCombos[1][1]);
     
     println();
     println("------------------------------------------------");
@@ -326,16 +328,15 @@ void draw() {
     int colorsDrawn = colorDrawCount;
     // draw nodes
     for (int i = 0; i < nodeDrawCount; i++) {
-        
         stroke(255);
         Vertex curVertex = vertexDict[i];
         
-        if (!userDrawFirstComponent || (userDrawFirstComponent && curVertex.toDraw)) {
+        if (!userDrawFirstComponent || (userDrawFirstComponent && curVertex.toDraw[0]) || (userDrawSecondComponent && curVertex.toDraw[1])) {
             // find appropriate color
             int j;
             for (j = 0; j < largestColors.length; j++)
                 if (largestColors[j] == curVertex.nodeColor) break;
-            if (j < 4 && (colorsDrawn > 0 || userDrawFirstComponent)) {
+            if (j < 4 && (colorsDrawn > 0 || userDrawFirstComponent || userDrawSecondComponent)) {
                 // set color based off... well, color
                 stroke(colorArr[j]);
             }
@@ -352,7 +353,7 @@ void draw() {
             
             while (curNeighbor != null) {
                 int index = curNeighbor.ID;
-                if (!userDrawFirstComponent || (userDrawFirstComponent && curVertex.toDraw && vertexDict[curNeighbor.ID].toDraw))
+                if (!userDrawFirstComponent || (userDrawFirstComponent && curVertex.toDraw[0] && vertexDict[curNeighbor.ID].toDraw[0]) || (userDrawSecondComponent && curVertex.toDraw[1] && vertexDict[curNeighbor.ID].toDraw[1]))
                     line(curVertex.positionX, curVertex.positionY, curVertex.positionZ, vertexDict[index].positionX, vertexDict[index].positionY, vertexDict[index].positionZ);
                 curNeighbor = curNeighbor.getNext();
             }
@@ -415,7 +416,8 @@ double calculateRadius() {
 
 // prints BFS traversal on an adjacency list
 // edited from source: http://www.geeksforgeeks.org/breadth-first-traversal-for-a-graph/
-// colorCombo == -1 if the node is too be drawn
+// colorCombo == -1 if the node is to be drawn (part of the 1st largest componenent)
+// colorCombo == -2 if the node is to be drawn (part of the 2nd largest componenent)
 int BFS(int v, int colorCombo, int c1, int c2) {
     java.util.LinkedList<Integer> queue = new java.util.LinkedList<Integer>(); 
     int count = 0; // number of nodes visited
@@ -436,15 +438,23 @@ int BFS(int v, int colorCombo, int c1, int c2) {
         while (curNode != null) {
             // if the node hasn't been visited (or it needs to be drawn) 
             // and it's the right color, mark it visited
-            if (((colorCombo > -1 && !vertexDict[curNode.ID].visited[colorCombo]) || colorCombo < 0 && !vertexDict[curNode.ID].visitedWhileDrawn) && (vertexDict[curNode.ID].nodeColor == c1 || vertexDict[curNode.ID].nodeColor == c2)) { //<>//
+            if (((colorCombo > -1 && !vertexDict[curNode.ID].visited[colorCombo]) || ((colorCombo == -1 && !vertexDict[curNode.ID].visitedWhileDrawn[0]) || (colorCombo == -2 && !vertexDict[curNode.ID].visitedWhileDrawn[1])))  //<>//
+                && (vertexDict[curNode.ID].nodeColor == c1 || vertexDict[curNode.ID].nodeColor == c2)) {
                 // mark the node as visited
                 if (colorCombo > -1)
                     vertexDict[curNode.ID].visited[colorCombo] = true;
                 
                 // draw the node if necessary
                 else {
-                    vertexDict[curNode.ID].visitedWhileDrawn = true;
-                    vertexDict[curNode.ID].toDraw = true;
+                    // mark 
+                    if (colorCombo == -1) {
+                        vertexDict[curNode.ID].visitedWhileDrawn[0] = true;
+                        vertexDict[curNode.ID].toDraw[0] = true;
+                    }
+                    else {
+                        vertexDict[curNode.ID].visitedWhileDrawn[1] = true;
+                        vertexDict[curNode.ID].toDraw[1] = true;
+                    }
                 }
                 queue.add(curNode.ID);
                 count++;
@@ -545,13 +555,21 @@ void keyPressed() {
     if (key == 32) { // space
         //angle = rotX = rotY = 0;
         //zoom = 300;
-        if (userColorNodes) 
+        if (userDrawFirstComponent) {
+            userDrawSecondComponent = true;
+            userDrawFirstComponent = false;
+            println("draw second!");
+        }
+        else if (userColorNodes) {
             userDrawFirstComponent = true;
+            println("draw first!");
+        }
         if (userDrawLines) 
             userColorNodes = true;
         if (nodeDrawCount < n)
             nodeDrawCount = n;
         else userDrawLines = true;
     }
+    println("userDrawFirstComponent: " + userDrawFirstComponent + ", " + "userDrawSecondComponent: " + userDrawSecondComponent);
 }
     
