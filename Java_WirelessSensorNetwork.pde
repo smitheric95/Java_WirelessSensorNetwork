@@ -2,9 +2,9 @@ import java.util.*;
 
 /* Globals */
 int graphSize = 500;
-String mode = "disk";
-int avgDegree = 128; //input from user
-int n = 20; // number of vertices (nodes)
+String mode = "sphere";
+int avgDegree = 12; //input from user
+int n = 300; // number of vertices (nodes)
 float rotX = 0; // rotation
 float rotY = 0;
 float zoom = 300;
@@ -31,7 +31,11 @@ boolean nodesDrawn = false;
 int lineDrawCount = 0;
 int colorDrawCount = 0;
 int time = 0;
-boolean userDrawLines = false, userColorNodes = false;
+boolean userDrawLines = false, 
+        userColorNodes = false, 
+        userDrawFirstComponent = false, 
+        userDrawSecondComponent = false;
+
 //int color1 = 1, color2 = 2;
  
 double r = 0; // calculated in calculateRadius
@@ -45,7 +49,7 @@ void setup() {
     /*
      * TESTING ONLY
      */ 
-     r = 0.4;
+     //r = 0.4;
      
     // build map of nodes
     for(int i = 0; i < n; i++) {  
@@ -301,7 +305,7 @@ void draw() {
     // delay drawing
     // source: https://forum.processing.org/one/topic/how-do-you-make-a-program-wait-for-one-or-two-seconds.html
     if (millis() > time){
-        time = millis() + 50;
+        time = millis() + 10;
         if (nodeDrawCount < n) // replace with press space!
             nodeDrawCount++;
         else if (userDrawLines){ 
@@ -318,20 +322,18 @@ void draw() {
     for (int i = 0; i < nodeDrawCount; i++) {
         Vertex curVertex = vertexDict[i];
         
-        //if (curVertex.toDraw) {
+        if (!userDrawFirstComponent || (userDrawFirstComponent && curVertex.toDraw)) {
             // find appropriate color
             int j;
             for (j = 0; j < largestColors.length; j++)
                 if (largestColors[j] == curVertex.nodeColor) break;
             if (j < 4 && colorsDrawn > 0) {
+                // set color based off... well, color
                 stroke(colorArr[j]);
             }
             colorsDrawn--;
-            
-            // set color based off... well, color
-            
             curVertex.drawVertex(); // draw!
-        //}
+        }
         
         // draw line between vertex and its neighbors
         
@@ -342,9 +344,8 @@ void draw() {
             
             while (curNeighbor != null) {
                 int index = curNeighbor.ID;
-                //if (curVertex.toDraw && vertexDict[curNeighbor.ID].toDraw)
-                   line(curVertex.positionX, curVertex.positionY, curVertex.positionZ, vertexDict[index].positionX, vertexDict[index].positionY, vertexDict[index].positionZ);
-                 
+                if (!userDrawFirstComponent || (userDrawFirstComponent && curVertex.toDraw && vertexDict[curNeighbor.ID].toDraw))
+                    line(curVertex.positionX, curVertex.positionY, curVertex.positionZ, vertexDict[index].positionX, vertexDict[index].positionY, vertexDict[index].positionZ);
                 curNeighbor = curNeighbor.getNext();
             }
             linesDrawn--;  
@@ -534,13 +535,13 @@ void keyPressed() {
         angle -= .03;
     }
     if (key == 32) { // space
-        angle = rotX = rotY = 0;
-        zoom = 300;
-        
-        if (userDrawLines)
+        //angle = rotX = rotY = 0;
+        //zoom = 300;
+        if (userColorNodes) 
+            userDrawFirstComponent = true;
+        if (userDrawLines) 
             userColorNodes = true;
-        else
-            userDrawLines = true;
+        else userDrawLines = true;
     }
 }
     
