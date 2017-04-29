@@ -2,9 +2,9 @@ import java.util.*;
 
 /* Globals */
 int graphSize = 500;
-String mode = "sphere";
-int avgDegree = 2; //input from user
-int n = 5; // number of vertices (nodes)
+String mode = "disk";
+int avgDegree = 128; //input from user
+int n = 20; // number of vertices (nodes)
 float rotX = 0; // rotation
 float rotY = 0;
 float zoom = 300;
@@ -25,7 +25,13 @@ color[] colorArr = {
     color(255,0,0), color(255,255,0)
 };
 
-
+// logic for real time display
+int nodeDrawCount = 0;
+boolean nodesDrawn = false;
+int lineDrawCount = 0;
+int colorDrawCount = 0;
+int time = 0;
+boolean userDrawLines = false, userColorNodes = false;
 //int color1 = 1, color2 = 2;
  
 double r = 0; // calculated in calculateRadius
@@ -36,6 +42,11 @@ void setup() {
     /**************************** PART I *******************************/
     r = calculateRadius(); // calculate radius based off avgDegree
     
+    /*
+     * TESTING ONLY
+     */ 
+     r = 0.4;
+     
     // build map of nodes
     for(int i = 0; i < n; i++) {  
         Vertex v = new Vertex(i);
@@ -112,7 +123,8 @@ void setup() {
         vertexDict[degreeDict[degreeIndex]].deleted = true;
         degreeIndex--;
     }
-        
+    /*** colorDict generated ***/
+    
     // set first vertex.color = 1
     vertexDict[colorDict[0].front.ID].nodeColor = 1;
     colorCount.put(1, 1);
@@ -168,7 +180,7 @@ void setup() {
     int numCombos = (int)choose(numLargestColors, 2);
     colorCombos = new int[numCombos][2]; // r = itCount nCr 2
     
-    // calculate the different combinations
+    // calculate the different combinations (nCr)
     int r = 0, c1 = 0;
     while (c1 < numLargestColors-1) {
         int c2 = c1+1;
@@ -278,42 +290,67 @@ void draw() {
     translate(width/2, height/2);
     scale(zoom);
     rotate(angle);
+    noFill();
+    background(0);
+    stroke(255);
     
     // rotate matrix based off mouse movement
     rotateX(rotX);
     rotateY(rotY);       
     
-    noFill();
-    background(0);
-        
+    // delay drawing
+    // source: https://forum.processing.org/one/topic/how-do-you-make-a-program-wait-for-one-or-two-seconds.html
+    if (millis() > time){
+        time = millis() + 50;
+        if (nodeDrawCount < n) // replace with press space!
+            nodeDrawCount++;
+        else if (userDrawLines){ 
+            nodesDrawn = true;
+            lineDrawCount++;
+            if (userColorNodes)
+                colorDrawCount++;
+        }
+    }
+    
+    int linesDrawn = lineDrawCount;
+    int colorsDrawn = colorDrawCount;
     // draw nodes
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < nodeDrawCount; i++) {
         Vertex curVertex = vertexDict[i];
         
-        if (curVertex.toDraw) {
+        //if (curVertex.toDraw) {
             // find appropriate color
             int j;
             for (j = 0; j < largestColors.length; j++)
                 if (largestColors[j] == curVertex.nodeColor) break;
-                    
+            if (j < 4 && colorsDrawn > 0) {
+                stroke(colorArr[j]);
+            }
+            colorsDrawn--;
+            
             // set color based off... well, color
-            stroke(colorArr[j]);
+            
             curVertex.drawVertex(); // draw!
-        }
+        //}
         
         // draw line between vertex and its neighbors
-        ListNode curNeighbor = curVertex.neighbors.front;
-        stroke(255);
-        strokeWeight(0.005);
-        while (curNeighbor != null) {
-            int index = curNeighbor.ID;
-            //if ((curVertex.nodeColor == color1 && vertexDict[index].nodeColor == color2) || (curVertex.nodeColor == color2 && vertexDict[index].nodeColor == color1))
-            if (curVertex.toDraw && vertexDict[curNeighbor.ID].toDraw)
-               line(curVertex.positionX, curVertex.positionY, curVertex.positionZ, vertexDict[index].positionX, vertexDict[index].positionY, vertexDict[index].positionZ);
-            curNeighbor = curNeighbor.getNext();
+        
+        if (nodesDrawn && linesDrawn > 0) {
+            ListNode curNeighbor = curVertex.neighbors.front;
+            stroke(255);
+            strokeWeight(0.005);
+            
+            while (curNeighbor != null) {
+                int index = curNeighbor.ID;
+                //if (curVertex.toDraw && vertexDict[curNeighbor.ID].toDraw)
+                   line(curVertex.positionX, curVertex.positionY, curVertex.positionZ, vertexDict[index].positionX, vertexDict[index].positionY, vertexDict[index].positionZ);
+                 
+                curNeighbor = curNeighbor.getNext();
+            }
+            linesDrawn--;  
         }
     }
-    
+       
     popMatrix();
 }
 
@@ -321,7 +358,8 @@ void draw() {
 void sweepNodes() {
     long startTime = System.nanoTime();
 
-    // sort dictionary based on X position
+    // sort degreeDict, which currently is an array of IDs in vertexDict, based on X positions
+    // to be sorted by another comparison later on
     Arrays.sort(degreeDict, new Comparator<Integer>() {
         public int compare(Integer v1, Integer v2) {
             return Float.compare(vertexDict[v1].positionX, vertexDict[v2].positionX);
@@ -495,9 +533,14 @@ void keyPressed() {
     else if (keyCode == LEFT) {
         angle -= .03;
     }
-    if (key == 32) {
+    if (key == 32) { // space
         angle = rotX = rotY = 0;
         zoom = 300;
+        
+        if (userDrawLines)
+            userColorNodes = true;
+        else
+            userDrawLines = true;
     }
 }
     
