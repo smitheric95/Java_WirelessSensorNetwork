@@ -4,7 +4,7 @@ import java.util.*;
 int graphSize = 500;
 String mode = "sphere";
 int avgDegree = 12; //input from user
-int n = 300; // number of vertices (nodes)
+int n = 3000; // number of vertices (nodes)
 float rotX = 0; // rotation
 float rotY = 0;
 float zoom = 300;
@@ -34,7 +34,8 @@ int time = 0;
 boolean userDrawLines = false, 
         userColorNodes = false, 
         userDrawFirstComponent = false, 
-        userDrawSecondComponent = false;
+        userDrawSecondComponent = false,
+        firstComponentDrawn = false;
 
 //int color1 = 1, color2 = 2;
  
@@ -283,7 +284,6 @@ void setup() {
         println();
     }
      
-     // BUG!
     println("1st Largest subgraph starts at: " + largestStarterNodes[0] + " with a size of: " + largestSizes[0] + " and of color combo of " + largestColorCombos[0][0] + ", " + largestColorCombos[0][1]); 
     println("2nd Largest subgraph starts at: " + largestStarterNodes[1] + " with a size of: " + largestSizes[1] + " and of color combo of " + largestColorCombos[1][0] + ", " + largestColorCombos[1][1]);
 }
@@ -296,7 +296,7 @@ void draw() {
     rotate(angle);
     noFill();
     background(0);
-    stroke(255);
+    
     
     // rotate matrix based off mouse movement
     rotateX(rotX);
@@ -305,7 +305,8 @@ void draw() {
     // delay drawing
     // source: https://forum.processing.org/one/topic/how-do-you-make-a-program-wait-for-one-or-two-seconds.html
     if (millis() > time){
-        time = millis() + 10;
+        if (!firstComponentDrawn)
+            time = millis() + 1;
         if (nodeDrawCount < n) // replace with press space!
             nodeDrawCount++;
         else if (userDrawLines){ 
@@ -313,6 +314,11 @@ void draw() {
             lineDrawCount++;
             if (userColorNodes)
                 colorDrawCount++;
+            if (userDrawFirstComponent && !firstComponentDrawn) {
+                firstComponentDrawn = true;
+                nodeDrawCount = n;
+                
+            }
         }
     }
     
@@ -320,6 +326,8 @@ void draw() {
     int colorsDrawn = colorDrawCount;
     // draw nodes
     for (int i = 0; i < nodeDrawCount; i++) {
+        
+        stroke(255);
         Vertex curVertex = vertexDict[i];
         
         if (!userDrawFirstComponent || (userDrawFirstComponent && curVertex.toDraw)) {
@@ -327,7 +335,7 @@ void draw() {
             int j;
             for (j = 0; j < largestColors.length; j++)
                 if (largestColors[j] == curVertex.nodeColor) break;
-            if (j < 4 && colorsDrawn > 0) {
+            if (j < 4 && (colorsDrawn > 0 || userDrawFirstComponent)) {
                 // set color based off... well, color
                 stroke(colorArr[j]);
             }
@@ -335,11 +343,11 @@ void draw() {
             curVertex.drawVertex(); // draw!
         }
         
+        stroke(0, 255, 255);
         // draw line between vertex and its neighbors
-        
-        if (nodesDrawn && linesDrawn > 0) {
+        if (userDrawFirstComponent || nodesDrawn && linesDrawn > 0) {
             ListNode curNeighbor = curVertex.neighbors.front;
-            stroke(255);
+            
             strokeWeight(0.005);
             
             while (curNeighbor != null) {
@@ -541,6 +549,8 @@ void keyPressed() {
             userDrawFirstComponent = true;
         if (userDrawLines) 
             userColorNodes = true;
+        if (nodeDrawCount < n)
+            nodeDrawCount = n;
         else userDrawLines = true;
     }
 }
