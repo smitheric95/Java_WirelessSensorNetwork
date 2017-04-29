@@ -44,6 +44,7 @@ double r = 0; // calculated in calculateRadius
 
 void setup() {
     size(900, 900, P3D); // set size of window
+    frame.setTitle("Drawing Vertices...");
     
     /**************************** PART I *******************************/
     r = calculateRadius(); // calculate radius based off avgDegree
@@ -573,19 +574,25 @@ void keyPressed() {
         if (userDrawSecondComponent) {
             userDrawSecondComponent = false;
             colorDrawCount = n;
-            //lineDrawCount = n * n;
+            frame.setTitle("2nd Largest Component");
         }
         else if (userDrawFirstComponent) {
             userDrawSecondComponent = true;
             userDrawFirstComponent = false;
-            //firstComponentDrawn = false;
+            frame.setTitle("1st Largest Component");
         }
-        else if (userColorNodes) 
+        else if (userColorNodes) {
             userDrawFirstComponent = true;
-        if (userDrawLines) 
+            frame.setTitle("Four Largest Colors");
+        }
+        if (userDrawLines) {
             userColorNodes = true;
-        if (nodeDrawCount < n)
+            frame.setTitle("All Vertices and Edges");
+        }
+        if (nodeDrawCount < n) {
             nodeDrawCount = n;
+            frame.setTitle("All Vertices");
+        }
         else userDrawLines = true;
     }
 }
