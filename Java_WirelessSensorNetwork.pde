@@ -3,8 +3,8 @@ import java.util.*;
 /* Globals */
 int graphSize = 500;
 String mode = "sphere";
-int avgDegree = 3; //input from user
-int n = 15; // number of vertices (nodes)
+int avgDegree = 18; //input from user
+int n = 6400; // number of vertices (nodes)
 float rotX = 0; // rotation
 float rotY = 0;
 float zoom = 300;
@@ -21,9 +21,9 @@ int[] largestColors;
 int[][] colorCombos; // all possible combinations of the n most popular colors 
 
 // NOTE: not always "color i"
-color[] colorArr = { 
-    color(0,0,255), color(0,255,0), 
-    color(255,0,0), color(255,255,0)
+color[] largesColorRGBs = { 
+    // blue, green, yellow, red
+    color(0, 0, 255), color(0, 255, 0), color(255,255,0), color(255, 0, 0), 
 };
 
 // logic for real time display
@@ -260,31 +260,31 @@ void setup() {
     BFS(largestStarterNodes[0], -1, largestColorCombos[0][0], largestColorCombos[0][1]); //<>//
     BFS(largestStarterNodes[1], -2, largestColorCombos[1][0], largestColorCombos[1][1]);
     
-    println();
-    println("------------------------------------------------");
-    //print adjacency list
-    print("Adjacency List: \n");
-    for (int j = 0; j < n; j++)
-        vertexDict[j].printVertex();
-    println("------------------------------------------------");
-    print("Degree List: \n");
-    for (int j = 0; j < n; j++) 
-        vertexDict[degreeDict[j]].printVertex();
-    println("------------------------------------------------");
-    println("Color Dict: ");
-    for (int j = 0; j < n; j++) 
-        colorDict[j].printList();
-    println("------------------------------------------------");
+    //println();
+    //println("------------------------------------------------");
+    ////print adjacency list
+    //print("Adjacency List: \n");
+    //for (int j = 0; j < n; j++)
+    //    vertexDict[j].printVertex();
+    //println("------------------------------------------------");
+    //print("Degree List: \n");
+    //for (int j = 0; j < n; j++) 
+    //    vertexDict[degreeDict[j]].printVertex();
+    //println("------------------------------------------------");
+    //println("Color Dict: ");
+    //for (int j = 0; j < n; j++) 
+    //    colorDict[j].printList();
+    //println("------------------------------------------------");
     println("Largest colors: ");
     for (int j = 0; j < largestColors.length; j++) println(largestColors[j]);
-    println("------------------------------------------------");
-    println("Color Combos: ");
-    for (int k = 0; k < colorCombos.length; k++) {
-        for (int l = 0; l < colorCombos[k].length; l++) {
-            print(colorCombos[k][l] + " ");
-        }
-        println();
-    }
+    //println("------------------------------------------------");
+    //println("Color Combos: ");
+    //for (int k = 0; k < colorCombos.length; k++) {
+    //    for (int l = 0; l < colorCombos[k].length; l++) {
+    //        print(colorCombos[k][l] + " ");
+    //    }
+    //    println();
+    //}
      
     println("1st Largest subgraph starts at: " + largestStarterNodes[0] + " with a size of: " + largestSizes[0] + " and of color combo of " + largestColorCombos[0][0] + ", " + largestColorCombos[0][1]); 
     println("2nd Largest subgraph starts at: " + largestStarterNodes[1] + " with a size of: " + largestSizes[1] + " and of color combo of " + largestColorCombos[1][0] + ", " + largestColorCombos[1][1]);
@@ -313,13 +313,12 @@ void draw() {
             nodeDrawCount++;
         else if (userDrawLines){ 
             nodesDrawn = true;
-            lineDrawCount++;
+            lineDrawCount += n/10;
             if (userColorNodes)
-                colorDrawCount++;
+                colorDrawCount += n/10;
             if (userDrawFirstComponent && !firstComponentDrawn) {
                 firstComponentDrawn = true;
-                nodeDrawCount = n;
-                
+                nodeDrawCount = n;   
             }
         }
     }
@@ -329,16 +328,25 @@ void draw() {
     // draw nodes
     for (int i = 0; i < nodeDrawCount; i++) {
         stroke(255);
+        if ((!userDrawFirstComponent && !userDrawSecondComponent)) {
+            if (n > 1000)
+                strokeWeight(0.02);
+            else if (n > 10000)
+                strokeWeight(0.01);
+        }
+        else strokeWeight(0.03);
+      
         Vertex curVertex = vertexDict[i];
         
         if ((!userDrawFirstComponent && !userDrawSecondComponent) || (userDrawFirstComponent && curVertex.toDraw[0]) || (userDrawSecondComponent && curVertex.toDraw[1])) {
-            // find appropriate color
+            // find appropriate color 
             int j;
             for (j = 0; j < largestColors.length; j++)
                 if (largestColors[j] == curVertex.nodeColor) break;
-            if (j < 4 && (colorsDrawn > 0 || userDrawFirstComponent || userDrawSecondComponent)) {
+            
+            if (j < largestColors.length && (colorsDrawn > 0 || userDrawFirstComponent || userDrawSecondComponent)) {
                 // set color based off... well, color
-                stroke(colorArr[j]);
+                stroke(largesColorRGBs[j]);
             }
             colorsDrawn--;
             curVertex.drawVertex(); // draw!
@@ -346,10 +354,16 @@ void draw() {
         
         stroke(0, 255, 255);
         // draw line between vertex and its neighbors
-        if (userDrawFirstComponent || nodesDrawn && linesDrawn > 0) {
+        if (userDrawFirstComponent || userDrawSecondComponent || nodesDrawn && (linesDrawn > 0)) {
             ListNode curNeighbor = curVertex.neighbors.front;
             
-            strokeWeight(0.005);
+            if (!userDrawFirstComponent && !userDrawSecondComponent) { 
+                if (n > 1000)
+                    strokeWeight(0.0005);
+                else if (n > 10000)
+                    strokeWeight(0.0001);
+            }
+            else strokeWeight(0.005);
             
             while (curNeighbor != null) {
                 int index = curNeighbor.ID;
@@ -556,12 +570,15 @@ void keyPressed() {
     if (key == 32) { // space
         //angle = rotX = rotY = 0;
         //zoom = 300;
-        if (userDrawSecondComponent) 
+        if (userDrawSecondComponent) {
             userDrawSecondComponent = false;
+            colorDrawCount = n;
+            //lineDrawCount = n * n;
+        }
         else if (userDrawFirstComponent) {
             userDrawSecondComponent = true;
             userDrawFirstComponent = false;
-            firstComponentDrawn = false;
+            //firstComponentDrawn = false;
         }
         else if (userColorNodes) 
             userDrawFirstComponent = true;
