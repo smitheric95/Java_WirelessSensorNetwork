@@ -3,8 +3,8 @@ import java.util.*;
 /* Globals */
 int graphSize = 500;
 String mode = "sphere";
-int avgDegree = 5; //input from user
-int n = 500; // number of vertices (nodes)
+int avgDegree = 28; //input from user
+int n = 10001; // number of vertices (nodes)
 float rotX = 0; // rotation
 float rotY = 0;
 float zoom = 300;
@@ -21,7 +21,7 @@ int[] largestColors;
 int[][] colorCombos; // all possible combinations of the n most popular colors 
 
 // NOTE: not always "color i"
-color[] largesColorRGBs = { 
+color[] largestColorRGBs = { 
     // blue, green, yellow, red
     color(0, 0, 255), color(0, 255, 0), color(255,255,0), color(255, 0, 0), 
 };
@@ -44,7 +44,7 @@ double r = 0; // calculated in calculateRadius
 
 void setup() {
     size(900, 900, P3D); // set size of window
-    frame.setTitle("Drawing Vertices...");
+    surface.setTitle("Drawing Vertices...");
     
     /**************************** PART I *******************************/
     r = calculateRadius(); // calculate radius based off avgDegree
@@ -314,9 +314,9 @@ void draw() {
             nodeDrawCount++;
         else if (userDrawLines){ 
             nodesDrawn = true;
-            lineDrawCount += n/10;
+            lineDrawCount += n/20;
             if (userColorNodes)
-                colorDrawCount += n/10;
+                colorDrawCount += n/20;
             if (userDrawFirstComponent && !firstComponentDrawn) {
                 firstComponentDrawn = true;
                 nodeDrawCount = n;   
@@ -329,13 +329,14 @@ void draw() {
     // draw nodes
     for (int i = 0; i < nodeDrawCount; i++) {
         stroke(255);
-        strokeWeight(0.05);
+        strokeWeight(0.04);
         if ((!userDrawFirstComponent && !userDrawSecondComponent)) {
             if (n > 1000)
                 strokeWeight(0.02);
             else if (n > 10000)
-                strokeWeight(0.01);
+                strokeWeight(0.0005);
         }
+        
         
         Vertex curVertex = vertexDict[i];
         
@@ -347,8 +348,9 @@ void draw() {
             
             if (j < largestColors.length && (colorsDrawn > 0 || userDrawFirstComponent || userDrawSecondComponent)) {
                 // set color based off... well, color
-                stroke(largesColorRGBs[j]);
+                stroke(largestColorRGBs[j]);
             }
+            else if (userColorNodes) stroke((curVertex.nodeColor*50)%255, (curVertex.nodeColor*20)%255,(curVertex.nodeColor*70)%255);
             colorsDrawn--;
             curVertex.drawVertex(); // draw!
         }
@@ -360,9 +362,9 @@ void draw() {
             strokeWeight(0.005);
             if (!userDrawFirstComponent && !userDrawSecondComponent) { 
                 if (n > 1000)
-                    strokeWeight(0.0005);
+                    strokeWeight(0.001);
                 else if (n > 10000)
-                    strokeWeight(0.0001);
+                    strokeWeight(0.00001);
             }
             
             while (curNeighbor != null) {
@@ -556,10 +558,10 @@ void mouseDragged() {
 void keyPressed() {
     // https://forum.processing.org/two/discussion/2151/zoom-in-and-out
     if (keyCode == UP) {
-        zoom += 10;
+        zoom += 20;
     }
     else if (keyCode == DOWN) {
-        zoom -= 10;
+        zoom -= 20;
     }
     else if (keyCode == RIGHT) {
         angle += .03;
@@ -571,28 +573,28 @@ void keyPressed() {
         if (userDrawSecondComponent) {
             userDrawSecondComponent = false;
             colorDrawCount = n;
-            frame.setTitle("All Vertices and Edges");
+            surface.setTitle("All Vertices and Edges");
         }
         else if (userDrawFirstComponent) {
             userDrawSecondComponent = true;
             userDrawFirstComponent = false;
-            frame.setTitle("2nd Largest Component");
+            surface.setTitle("2nd Largest Component");
         }
         else if (userColorNodes) {
             userDrawFirstComponent = true;
-            frame.setTitle("1st Largest Component");
+            surface.setTitle("1st Largest Component");
         }
         else if (userDrawLines) {
             userColorNodes = true;
-            frame.setTitle("Four Largest Colors");
+            surface.setTitle("Coloring");
         }
         else if (nodeDrawCount < n) {
             nodeDrawCount = n;
-            frame.setTitle("All Vertices");
+            surface.setTitle("All Vertices");
         }
         else {
             userDrawLines = true;
-            frame.setTitle("All Vertices and Edges");
+            surface.setTitle("All Vertices and Edges");
         }
     }
 }
