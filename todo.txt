@@ -9,7 +9,8 @@ report:
 - be able to create dummy graphs
 - verify the running time bound of each algorithm
 	- talk about how you would do it more efficiently
- 
+- talk about the different features... keys etc 
+- GITHUB
 structure:
 	- 2 to 3 page Executive Summary:
 		- intro and summary

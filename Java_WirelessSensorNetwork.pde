@@ -3,8 +3,8 @@ import java.util.*;
 /* Globals */
 int graphSize = 500;
 String mode = "sphere";
-int avgDegree = 28; //input from user
-int n = 10001; // number of vertices (nodes)
+int avgDegree = 15; //input from user
+int n = 1001; // number of vertices (nodes)
 float rotX = 0; // rotation
 float rotY = 0;
 float zoom = 300;
@@ -38,21 +38,22 @@ boolean userDrawLines = false,
         userDrawSecondComponent = false,
         firstComponentDrawn = false;
 
-//int color1 = 1, color2 = 2;
  
 double r = 0; // calculated in calculateRadius
 
 void setup() {
-    size(900, 900, P3D); // set size of window
+    long startTime = System.nanoTime();
+    smooth();
+    size(1680, 1050, P3D); // set size of window
     surface.setTitle("Drawing Vertices...");
     
     /**************************** PART I *******************************/
     r = calculateRadius(); // calculate radius based off avgDegree
     
     /*
-     * TESTING ONLY
+     * DEMONSTRATION ONLY
      */ 
-     //r = 0.4;
+     // r = 0.4;
      
     // build map of nodes
     for(int i = 0; i < n; i++) {  
@@ -93,9 +94,16 @@ void setup() {
     
     // build adjacency list using sweep method
     sweepNodes();
+    
+    // calculate time part 2 took
+    long endTime = System.nanoTime();
+    println(((endTime - startTime)/1000000) + " ms to build adj list");  
+    
     /************************** END PART I *****************************/
     
     /**************************** PART II *******************************/
+    startTime = System.nanoTime(); // reset our time counter
+    
     // smallest last vertex ordering    
     Arrays.sort(degreeDict, new Comparator<Integer>() {
         public int compare(Integer v1, Integer v2) {
@@ -155,12 +163,17 @@ void setup() {
         
         // color the vertex
         vertexDict[colorDict[i].front.ID].nodeColor = curColor;
+        // println("Vertex " + vertexDict[colorDict[i].front.ID].ID + " gets color " + curColor);
         
         // increment the count of the corresponding color
         Integer freq = colorCount.get(curColor);
         colorCount.put(curColor, (freq == null) ? 1 : freq +1);
     }
+    // calculate time part 2 took
+    endTime = System.nanoTime();
+    println(((endTime - startTime)/1000000) + " ms to color nodes");  
     
+    /**************************** PART III *******************************/
     /***** Bipartite backbone selection *****/
     // sort the occurences of color
     colorCount = sortByValues(colorCount); 
@@ -251,7 +264,9 @@ void setup() {
             numNodesVisited += curSize;
         }
     }
-    
+    // calculate time part 3 took
+    endTime = System.nanoTime();
+    println(((endTime - startTime)/1000000) + " ms to find backbones");  
    
    
     //use BFS to draw nodes and edges
@@ -276,8 +291,8 @@ void setup() {
     //for (int j = 0; j < n; j++) 
     //    colorDict[j].printList();
     //println("------------------------------------------------");
-    println("Largest colors: ");
-    for (int j = 0; j < largestColors.length; j++) println(largestColors[j]);
+    //println("Largest colors: ");
+    //for (int j = 0; j < largestColors.length; j++) println(largestColors[j]);
     //println("------------------------------------------------");
     //println("Color Combos: ");
     //for (int k = 0; k < colorCombos.length; k++) {
@@ -383,8 +398,6 @@ void draw() {
 
 // build vertexDict using sweep method
 void sweepNodes() {
-    long startTime = System.nanoTime();
-
     // sort degreeDict, which currently is an array of IDs in vertexDict, based on X positions
     // to be sorted by another comparison later on
     Arrays.sort(degreeDict, new Comparator<Integer>() {
@@ -412,10 +425,6 @@ void sweepNodes() {
             
         } // end while
     } // end for
-    
-    // calculate time it took
-    long endTime = System.nanoTime();
-    println(((endTime - startTime)/1000000) + " ms to build adj list");  
 }             
 // returns radius of a point based average degree
 // check video to see if accurate
