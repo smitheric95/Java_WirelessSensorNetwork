@@ -6,7 +6,7 @@ lowercase = implied component
 EXECUTIVE SUMMARY
 *	- INTRODUCTION
 		- marketing effort
-#	- PROGRLAMMING ENVIRONMENT DESCRIPTION
+#	- PROGRAMMING ENVIRONMENT DESCRIPTION
 		- was it overkill?
  		- interaction between system components needed for efficiency and display
 		# Description of program for graphs/tables
@@ -31,7 +31,7 @@ CORE
 				# copy from notebook
 #			- VERIFICATION WALKTHROUGH
 				# complete coloring
-*			- ALGORITHM EFFECTIVENESS
+#			- ALGORITHM EFFECTIVENESS
 				- table of results (OVERVIEW of benchmarks and test graphs)
 					- two to four that implement size and quality 
 					- make this table about speed (parts 1,2,3 and total)
@@ -44,23 +44,30 @@ RESULT SUMMARY & DISPLAY
 		- output for each bipartite partition
 			- note: points awarded on basis of use of illustrations (look pretty)
 *	- TABLE 
-		- for each graph (benchmark0
+		- for each graph (benchmark)
 *		- SEQUENTIAL COLORING PLOT	
-			- degree when delted (in the smallest order) vs original degree
+			- degree when deleted (in the smallest order) vs original degree
 			- will require some code changes in the coloring algorithm
 *		- COLOR CLASS SIZE DISTRIBUTION
 			- percentages of each color ("distribution")
 *		- SUMMARY TABLE
-			- ID, N, R, M (numEdges), min degree, avg degree, max degree, max degree when delted, number of colors, size
+			- ID, N, R, M (numEdges), min degree, avg degree, max degree, 
+			  max degree when deleted, number of colors, size
 			  of largest color class, num edges in largest bipartite subgraph,
 			- if time permits:
 				- for sphere, include number of faces
 				- terminal clique size	
 *		- BACKBONE SELECTION PROCEDURES AND DISPLAYS
 			- for each benchmark:
+				- screenshot
 					- number of vertices
 					- number of edges
 				- for each two backbones:
+					- screenshot
 					- number of vertices
 					- number of edges
 					- domination percentage
+
+
+PURPLE BUG ON SMALL GRAPHS?!?!
+	- might be spacebar being pressed when nodes are already drawn

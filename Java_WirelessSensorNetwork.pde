@@ -2,15 +2,18 @@ import java.util.*;
 
 /* Globals */
 int graphSize = 500;
-String mode = "sphere";
-int avgDegree = 15; //input from user
-int n = 1001; // number of vertices (nodes)
+String mode = "square";
+int avgDegree = 3; //input from user
+int n = 100; // number of vertices (nodes)
 float rotX = 0; // rotation
 float rotY = 0;
 float zoom = 300;
 float angle = 0; // rotation with keyboard
 Vertex[] vertexDict = new Vertex[n]; // adjacency list of vertices and their neighbors
 Integer[] degreeDict = new Integer[n]; // ordered by smallest degree last, array of indices in vertexDict
+
+// output file for creating graphs as needed
+PrintWriter output;
 
 // first node is the vertex to color
 LinkedList[] colorDict = new LinkedList[n];
@@ -44,16 +47,14 @@ double r = 0; // calculated in calculateRadius
 void setup() {
     long startTime = System.nanoTime();
     smooth();
-    size(1680, 1050, P3D); // set size of window
+    size(840, 840, P3D); // set size of window
     surface.setTitle("Drawing Vertices...");
+    
+    // create output file
+    output = createWriter("output_" + n + "_" + avgDegree + "_" + mode + ".csv");
     
     /**************************** PART I *******************************/
     r = calculateRadius(); // calculate radius based off avgDegree
-    
-    /*
-     * DEMONSTRATION ONLY
-     */ 
-     // r = 0.4;
      
     // build map of nodes
     for(int i = 0; i < n; i++) {  
@@ -117,25 +118,33 @@ void setup() {
         colorDict[i].add(degreeDict[i]); // first node will be base of colorDict
     }
 
+    output.println("Degree when Deleted, Original Degree");
     /***** generate colorDict *****/
     // start at the lowest degree 
     int degreeIndex = degreeDict.length - 1;
     while (degreeIndex > -1) {
         Vertex curVertex = vertexDict[degreeDict[degreeIndex]];
+        int curDegree = 0;
         
         // loop through each neighbor
         ListNode curNeighbor = curVertex.neighbors.front;
         while (curNeighbor != null) {
             int j = curNeighbor.ID; // index in vertexDict
             //if hasn't been deleted from vertexDict
-            if (!vertexDict[j].deleted)
+            if (!vertexDict[j].deleted) {
                 colorDict[degreeIndex].append(curNeighbor.ID);
-                
+                curDegree++;
+            }
             curNeighbor = curNeighbor.next; 
         }
         
         //delete from vertexDict
         vertexDict[degreeDict[degreeIndex]].deleted = true;
+        
+        // print degree when delted vs original degree
+        output.println(curDegree + "," + curVertex.neighbors.size);
+        
+        //println(
         degreeIndex--;
     }
     /*** colorDict generated ***/
@@ -276,7 +285,7 @@ void setup() {
     BFS(largestStarterNodes[0], -1, largestColorCombos[0][0], largestColorCombos[0][1]); //<>//
     BFS(largestStarterNodes[1], -2, largestColorCombos[1][0], largestColorCombos[1][1]);
     
-    //println();
+    println();
     //println("------------------------------------------------");
     ////print adjacency list
     //print("Adjacency List: \n");
@@ -304,6 +313,10 @@ void setup() {
      
     println("1st Largest subgraph starts at: " + largestStarterNodes[0] + " with a size of: " + largestSizes[0] + " and of color combo of " + largestColorCombos[0][0] + ", " + largestColorCombos[0][1]); 
     println("2nd Largest subgraph starts at: " + largestStarterNodes[1] + " with a size of: " + largestSizes[1] + " and of color combo of " + largestColorCombos[1][0] + ", " + largestColorCombos[1][1]);
+    
+    // close output file
+    output.flush(); 
+    output.close(); 
 }
 
 void draw() {

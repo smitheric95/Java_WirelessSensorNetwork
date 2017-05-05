@@ -1,3 +1,6 @@
+
+- work on display for square
+
 report: 
 - 10 to 15 with max of 30
 - appedices of source code (doesn't count for page count)
