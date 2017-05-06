@@ -53,8 +53,8 @@ void setup() {
     surface.setTitle("Drawing Vertices...");
     
     // create output file
-    outputSequential = createWriter("outputSequential_" + n + "_" + avgDegree + "_" + mode + ".csv");
-    outputDistribution = createWriter("outputDistribution_" + n + "_" + avgDegree + "_" + mode + ".csv");
+    outputSequential = createWriter("output/outputSequential_" + n + "_" + avgDegree + "_" + mode + ".csv");
+    outputDistribution = createWriter("output/outputDistribution_" + n + "_" + avgDegree + "_" + mode + ".csv");
     /**************************** PART I *******************************/
     r = calculateRadius(); // calculate radius based off avgDegree
      
