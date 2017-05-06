@@ -3,10 +3,10 @@ import java.util.*;
 /* Globals */
 int graphSize = 500;
 String mode = "sphere";
-int avgDegree = 15; //input from user
+int avgDegree = 4; //input from user
 int totalDeg = 0; // for real avg degree
 int maxDegDeleted = -1;
-int n = 1001; // number of vertices (nodes)
+int n = 30; // number of vertices (nodes)
 int numEdges = 0;
 float rotX = 0; // rotation
 float rotY = 0;
@@ -333,9 +333,9 @@ void setup() {
     println("----------------- Summary Table ----------------");
     // N, R, M (numEdges), min degree, avg degree, real avg degree, max degree,
     // max degree when deleted, number of colors, size of largest color class
-    // terminal clique size, num edges in largest bipartite subgraph
+    // terminal clique size, n of largest backbone, m of largest backbone, domination percentage
     
-    println(n, r, numEdges, minDeg, avgDegree, totalDeg/n, maxDeg, maxDegDeleted, colorCount.size(), largestSizes[0], terminalCliqueSize, largestSizes[0]);
+    println(n, r, numEdges, minDeg, avgDegree, totalDeg/n, maxDeg, maxDegDeleted, colorCount.size(), largestSizes[0], terminalCliqueSize, largestSizes[0], largestSizes[0] - 1, (largestSizes[0]*1.0)/n);
     println("------------------------------------------------");
     println();
     

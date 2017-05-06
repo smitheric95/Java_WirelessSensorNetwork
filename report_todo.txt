@@ -50,20 +50,18 @@ RESULT SUMMARY & DISPLAY
 			- will require some code changes in the coloring algorithm
 #		- COLOR CLASS SIZE DISTRIBUTION
 			- percentages of each color ("distribution")
-*		- SUMMARY TABLE
+#		- SUMMARY TABLE
 			- ID, N, R, M (numEdges), min degree, avg degree, real avg degree, max degree, 
 			  max degree when deleted, number of colors, size
 			  of largest color class, terminal clique size, num edges in largest bipartite subgraph,
-			- if time permits:
-				- for sphere, include number of faces
-				- terminal clique size	
+
 *		- BACKBONE SELECTION PROCEDURES AND DISPLAYS
 			- for each benchmark:
-				- screenshot
+				- screenshot (if necessary)
 					- number of vertices
 					- number of edges
 				- for each two backbones:
-					- screenshot (if necessary)
+					- screenshot 
 					- number of vertices
 					- number of edges
 					- domination percentage
