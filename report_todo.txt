@@ -16,7 +16,7 @@ EXECUTIVE SUMMARY
 *	- SUMMARY
 		- major result
 		- strongest features of your implementation
-		- TABLE OF RESULTS
+		- TABLE OF RESULTS (backbone selection procedures and displays table)
 		- references to references
 
 CORE
@@ -48,7 +48,7 @@ RESULT SUMMARY & DISPLAY
 #		- SEQUENTIAL COLORING PLOT	
 			- degree when deleted (in the smallest order) vs original degree
 			- will require some code changes in the coloring algorithm
-*		- COLOR CLASS SIZE DISTRIBUTION
+#		- COLOR CLASS SIZE DISTRIBUTION
 			- percentages of each color ("distribution")
 *		- SUMMARY TABLE
 			- ID, N, R, M (numEdges), min degree, avg degree, max degree, 
@@ -63,7 +63,7 @@ RESULT SUMMARY & DISPLAY
 					- number of vertices
 					- number of edges
 				- for each two backbones:
-					- screenshot
+					- screenshot (if necessary)
 					- number of vertices
 					- number of edges
 					- domination percentage
@@ -72,4 +72,7 @@ RESULT SUMMARY & DISPLAY
 PURPLE BUG ON SMALL GRAPHS?!?!
 	- might be spacebar being pressed when nodes are already drawn
 
-line 200 has changed (alg description in notebook must reflect that) (no longer only going over 4 spots) 
+line 200 has changed (alg description in notebook must reflect that) 
+	no longer only going over 4 spots
+line 143 has changed (alg description in notebook must reflect that)
+	seeing if graph is complete
