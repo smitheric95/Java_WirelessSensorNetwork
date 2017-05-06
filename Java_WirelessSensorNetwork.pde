@@ -2,11 +2,11 @@ import java.util.*;
 
 /* Globals */
 int graphSize = 500;
-String mode = "square";
+String mode = "disk";
 int avgDegree = 64; //input from user
 int totalDeg = 0; // for real avg degree
 int maxDegDeleted = -1;
-int n = 16000; // number of vertices (nodes)
+int n = 4000; // number of vertices (nodes)
 int numEdges = 0;
 float rotX = 0; // rotation
 float rotY = 0;
@@ -48,7 +48,7 @@ boolean userDrawLines = false,
         cliqueDetermined = false;
 
  
-double r = 0; // calculated in calculateRadius
+double R = 0; // calculated in calculateRadius
 
 void setup() {
     long startTime = System.nanoTime();
@@ -60,8 +60,8 @@ void setup() {
     outputSequential = createWriter("output/outputSequential_" + n + "_" + avgDegree + "_" + mode + ".csv");
     outputDistribution = createWriter("output/outputDistribution_" + n + "_" + avgDegree + "_" + mode + ".csv");
     /**************************** PART I *******************************/
-    r = calculateRadius(); // calculate radius based off avgDegree
-     
+    R = calculateRadius(); // calculate radius based off avgDegree
+    
     // build map of nodes
     for(int i = 0; i < n; i++) {  
         Vertex v = new Vertex(i);
@@ -336,7 +336,7 @@ void setup() {
     // max degree when deleted, number of colors, size of largest color class
     // terminal clique size, n of largest backbone, m of largest backbone, domination percentage
     
-    println(n, r, numEdges, minDeg, avgDegree, totalDeg/n, maxDeg);
+    println(n, R, numEdges, minDeg, avgDegree, totalDeg/n, maxDeg);
     println(maxDegDeleted, colorCount.size(), largestSizes[0], terminalCliqueSize, largestSizes[0], largestSizes[0] - 1, (largestSizes[0]*1.0)/n);
     println("------------------------------------------------");
     println();
@@ -417,7 +417,7 @@ void draw() {
     int colorsDrawn = colorDrawCount;
     
     // calculate stroke weight depending on graph type and size
-    nodeStrokeWeight = 0.04;
+    nodeStrokeWeight = 0.03;
     edgeStrokeWeight = 0.005;
     if ((!userDrawFirstComponent && !userDrawSecondComponent)) {
         if (n > 1000) {
@@ -425,7 +425,7 @@ void draw() {
             edgeStrokeWeight = 0.001;
         }
         else if (n > 10000) {
-            nodeStrokeWeight = 0.00001;
+            nodeStrokeWeight = 0.0001;
             edgeStrokeWeight = 0.00001;
         }
     }
@@ -433,7 +433,7 @@ void draw() {
         nodeStrokeWeight /= 2;
         edgeStrokeWeight /= 2;
     }
-    
+
     // draw nodes
     for (int i = 0; i < nodeDrawCount; i++) {
         stroke(255);
@@ -491,10 +491,10 @@ void sweepNodes() {
         int j = i-1;
         
         // if the vertex to left is within range, calculate distance
-        while ((j >= 0) && (vertexDict[degreeDict[i]].positionX - vertexDict[degreeDict[j]].positionX <= r)) {
+        while ((j >= 0) && (vertexDict[degreeDict[i]].positionX - vertexDict[degreeDict[j]].positionX <= R)) {
             // calculate distance based off topology
             if (dist(vertexDict[degreeDict[i]].positionX, vertexDict[degreeDict[i]].positionY, vertexDict[degreeDict[i]].positionZ, 
-                     vertexDict[degreeDict[j]].positionX, vertexDict[degreeDict[j]].positionY, vertexDict[degreeDict[j]].positionZ) <= r) {
+                     vertexDict[degreeDict[j]].positionX, vertexDict[degreeDict[j]].positionY, vertexDict[degreeDict[j]].positionZ) <= R) {
                     
                     // add both to each other's linked lists
                     vertexDict[degreeDict[i]].neighbors.add(vertexDict[degreeDict[j]].ID);                       
