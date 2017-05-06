@@ -3,15 +3,15 @@ import java.util.*;
 /* Globals */
 int graphSize = 500;
 String mode = "square";
-int avgDegree = 32; //input from user
-int n = 1000; // number of vertices (nodes)
+int avgDegree = 2; //input from user
+int n = 5; // number of vertices (nodes)
 float rotX = 0; // rotation
 float rotY = 0;
 float zoom = 300;
 float angle = 0; // rotation with keyboard
 Vertex[] vertexDict = new Vertex[n]; // adjacency list of vertices and their neighbors
 Integer[] degreeDict = new Integer[n]; // ordered by smallest degree last, array of indices in vertexDict
-int numNotDeleted = n; // 
+int numNotDeleted = n, terminalCliqueSize = 0; // calculating terminal clique  
 
 // output files for creating graphs as needed
 PrintWriter outputSequential, outputDistribution;
@@ -120,6 +120,7 @@ void setup() {
         colorDict[i].add(degreeDict[i]); // first node will be base of colorDict
     }
 
+    
     outputSequential.println("Original Degree, Degree when Deleted");
     /***** generate colorDict *****/
     // start at the lowest degree 
@@ -145,14 +146,32 @@ void setup() {
         numNotDeleted--;
         
         // determine terminal clique
+        // source: http://stackoverflow.com/a/30106072
         if (!cliqueDetermined) {
-            // for each node in the adjacency list
-                // for each neighbor
-                    // count the ones that haven't been deleted
-                
-                // if the number of of neighbors == numNotDeleted (candidate for clique)
-                    // continue loop
-                    // else break
+            int cliqueCount = 0;
+            // for each node in the adjacency list (that hasn't been deleted)
+            for (int j = 0; j < vertexDict.length; j++) {
+                if (!vertexDict[j].deleted) {
+                    // loop through each neighbor
+                    int remainingNeighbors = 0;
+                    ListNode curNode = vertexDict[j].neighbors.front;
+                    while (curNode != null) {
+                        // count the ones that haven't been deleted
+                        if (!vertexDict[curNode.ID].deleted)
+                            remainingNeighbors++;
+                        curNode = curNode.next;
+                    }
+                    // if the number of remaining neighbors == numNotDeleted-1 distict vertices (candidate for clique)
+                    if (remainingNeighbors == numNotDeleted - 1) 
+                        cliqueCount++;
+                    else break;
+                }
+            }
+            if (cliqueCount == numNotDeleted && numNotDeleted != 0) {
+                // we have a clique, ladies and gentlemen!
+                terminalCliqueSize = numNotDeleted;
+                cliqueDetermined = true;
+            }
         }
         
         // print degree when deleted vs original degree
@@ -186,7 +205,6 @@ void setup() {
         
         // color the vertex
         vertexDict[colorDict[i].front.ID].nodeColor = curColor;
-        // println("Vertex " + vertexDict[colorDict[i].front.ID].ID + " gets color " + curColor);
         
         // increment the count of the corresponding color
         Integer freq = colorCount.get(curColor);
@@ -220,7 +238,6 @@ void setup() {
         
         // ouput color and the number of times it occurs
         outputDistribution.println(c.getKey() + "," + ((int)c.getValue() * 1.0 / n));
-        
         itCount++;
     }
     
