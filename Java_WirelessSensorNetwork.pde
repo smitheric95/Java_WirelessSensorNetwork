@@ -2,11 +2,11 @@ import java.util.*;
 
 /* Globals */
 int graphSize = 500;
-String mode = "sphere";
-int avgDegree = 4; //input from user
+String mode = "square";
+int avgDegree = 64; //input from user
 int totalDeg = 0; // for real avg degree
 int maxDegDeleted = -1;
-int n = 30; // number of vertices (nodes)
+int n = 16000; // number of vertices (nodes)
 int numEdges = 0;
 float rotX = 0; // rotation
 float rotY = 0;
@@ -15,6 +15,7 @@ float angle = 0; // rotation with keyboard
 Vertex[] vertexDict = new Vertex[n]; // adjacency list of vertices and their neighbors
 Integer[] degreeDict = new Integer[n]; // ordered by smallest degree last, array of indices in vertexDict
 int numNotDeleted = n, terminalCliqueSize = 0; // calculating terminal clique  
+float nodeStrokeWeight = 0.0, edgeStrokeWeight = 0.0;
 
 // output files for creating graphs as needed
 PrintWriter outputSequential, outputDistribution;
@@ -315,8 +316,8 @@ void setup() {
             // reduce the remaining nodes to visit
             numNodesVisited += curSize;
         }
-    }
-    // calculate time part 3 took //<>//
+    } //<>//
+    // calculate time part 3 took
     endTime = System.nanoTime();
     println(((endTime - startTime)/1000000) + " ms to find backbones");  
     
@@ -335,7 +336,8 @@ void setup() {
     // max degree when deleted, number of colors, size of largest color class
     // terminal clique size, n of largest backbone, m of largest backbone, domination percentage
     
-    println(n, r, numEdges, minDeg, avgDegree, totalDeg/n, maxDeg, maxDegDeleted, colorCount.size(), largestSizes[0], terminalCliqueSize, largestSizes[0], largestSizes[0] - 1, (largestSizes[0]*1.0)/n);
+    println(n, r, numEdges, minDeg, avgDegree, totalDeg/n, maxDeg);
+    println(maxDegDeleted, colorCount.size(), largestSizes[0], terminalCliqueSize, largestSizes[0], largestSizes[0] - 1, (largestSizes[0]*1.0)/n);
     println("------------------------------------------------");
     println();
     
@@ -410,18 +412,32 @@ void draw() {
         }
     }
     
+    // count what's been drawn
     int linesDrawn = lineDrawCount;
     int colorsDrawn = colorDrawCount;
+    
+    // calculate stroke weight depending on graph type and size
+    nodeStrokeWeight = 0.04;
+    edgeStrokeWeight = 0.005;
+    if ((!userDrawFirstComponent && !userDrawSecondComponent)) {
+        if (n > 1000) {
+            nodeStrokeWeight = 0.02;
+            edgeStrokeWeight = 0.001;
+        }
+        else if (n > 10000) {
+            nodeStrokeWeight = 0.00001;
+            edgeStrokeWeight = 0.00001;
+        }
+    }
+    if (mode == "square") {
+        nodeStrokeWeight /= 2;
+        edgeStrokeWeight /= 2;
+    }
+    
     // draw nodes
     for (int i = 0; i < nodeDrawCount; i++) {
         stroke(255);
-        strokeWeight(0.04);
-        if ((!userDrawFirstComponent && !userDrawSecondComponent)) {
-            if (n > 1000)
-                strokeWeight(0.02);
-            else if (n > 10000)
-                strokeWeight(0.0005);
-        }
+        strokeWeight(nodeStrokeWeight);
         
         Vertex curVertex = vertexDict[i];
         
@@ -441,16 +457,10 @@ void draw() {
         }
         
         stroke(0, 255, 255);
+        strokeWeight(edgeStrokeWeight);
         // draw line between vertex and its neighbors
         if (userDrawFirstComponent || userDrawSecondComponent || nodesDrawn && (linesDrawn > 0)) {
             ListNode curNeighbor = curVertex.neighbors.front;
-            strokeWeight(0.005);
-            if (!userDrawFirstComponent && !userDrawSecondComponent) { 
-                if (n > 1000)
-                    strokeWeight(0.001);
-                else if (n > 10000)
-                    strokeWeight(0.00001);
-            }
             
             while (curNeighbor != null) {
                 int index = curNeighbor.ID;
@@ -507,7 +517,7 @@ double calculateRadius() {
     else if (mode == "disk") {
         return Math.sqrt( avgDegree*1.0/n );
     }
-    else { 
+    else {  //<>//
         return Math.sqrt( 4*avgDegree*1.0/n );
     }
 }
@@ -517,7 +527,7 @@ double calculateRadius() {
 // colorCombo == -1 if the node is to be drawn (part of the 1st largest componenent)
 // colorCombo == -2 if the node is to be drawn (part of the 2nd largest componenent)
 int BFS(int v, int colorCombo, int c1, int c2) {
-    java.util.LinkedList<Integer> queue = new java.util.LinkedList<Integer>();  //<>//
+    java.util.LinkedList<Integer> queue = new java.util.LinkedList<Integer>(); 
     int count = 0; // number of nodes visited
     
     // mark the current node as visited and enqueue it
