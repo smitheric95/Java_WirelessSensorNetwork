@@ -2,9 +2,11 @@ import java.util.*;
 
 /* Globals */
 int graphSize = 500;
-String mode = "disk";
-int avgDegree = 2; //input from user
-int n = 5; // number of vertices (nodes)
+String mode = "sphere";
+int avgDegree = 15; //input from user
+int totalDeg = 0; // for real avg degree
+int maxDegDeleted = -1;
+int n = 1001; // number of vertices (nodes)
 int numEdges = 0;
 float rotX = 0; // rotation
 float rotY = 0;
@@ -128,6 +130,7 @@ void setup() {
     int degreeIndex = degreeDict.length - 1;
     while (degreeIndex > -1) {
         Vertex curVertex = vertexDict[degreeDict[degreeIndex]];
+        totalDeg += curVertex.neighbors.getSize();
         int curDegree = 0;
         
         // loop through each neighbor
@@ -175,8 +178,10 @@ void setup() {
             }
         }
         
-        // print degree when deleted vs original degree
+        // print original degree vs degree when deleted
         outputSequential.println(curVertex.neighbors.size + "," + curDegree);
+        if (curDegree > maxDegDeleted)
+            maxDegDeleted = curDegree;
         
         //println(
         degreeIndex--;
@@ -311,19 +316,29 @@ void setup() {
             numNodesVisited += curSize;
         }
     }
-    // calculate time part 3 took
+    // calculate time part 3 took //<>//
     endTime = System.nanoTime();
     println(((endTime - startTime)/1000000) + " ms to find backbones");  
     
     // exist for drawing only
-    BFS(largestStarterNodes[0], -1, largestColorCombos[0][0], largestColorCombos[0][1]); //<>// //<>//
+    BFS(largestStarterNodes[0], -1, largestColorCombos[0][0], largestColorCombos[0][1]);
     BFS(largestStarterNodes[1], -2, largestColorCombos[1][0], largestColorCombos[1][1]);
 
+    /********** Logic for Summary Table ************/
+    int minDeg = vertexDict[degreeDict[degreeDict.length-1]].neighbors.getSize();
+    int maxDeg = vertexDict[0].neighbors.getSize();
+    
     println("numEdges: " + numEdges);
     println("------------------------------------------------");
     println("----------------- Summary Table ----------------");
-    //
+    // N, R, M (numEdges), min degree, avg degree, real avg degree, max degree,
+    // max degree when deleted, number of colors, size of largest color class
+    // terminal clique size, num edges in largest bipartite subgraph
+    
+    println(n, r, numEdges, minDeg, avgDegree, totalDeg/n, maxDeg, maxDegDeleted, colorCount.size(), largestSizes[0], terminalCliqueSize, largestSizes[0]);
     println("------------------------------------------------");
+    println();
+    
     ////print adjacency list
     //print("Adjacency List: \n");
     //for (int j = 0; j < n; j++)
@@ -502,7 +517,7 @@ double calculateRadius() {
 // colorCombo == -1 if the node is to be drawn (part of the 1st largest componenent)
 // colorCombo == -2 if the node is to be drawn (part of the 2nd largest componenent)
 int BFS(int v, int colorCombo, int c1, int c2) {
-    java.util.LinkedList<Integer> queue = new java.util.LinkedList<Integer>(); 
+    java.util.LinkedList<Integer> queue = new java.util.LinkedList<Integer>();  //<>//
     int count = 0; // number of nodes visited
     
     // mark the current node as visited and enqueue it
@@ -517,7 +532,7 @@ int BFS(int v, int colorCombo, int c1, int c2) {
         /* Get all adjacent vertices of the dequeued vertex s
         If a adjacent has not been visited, then mark it
         visited and enqueue it */
-        ListNode curNode = vertexDict[v].neighbors.front;  //<>//
+        ListNode curNode = vertexDict[v].neighbors.front; 
         while (curNode != null) {
             // if the node hasn't been visited (or it needs to be drawn) 
             // and it's the right color, mark it visited
