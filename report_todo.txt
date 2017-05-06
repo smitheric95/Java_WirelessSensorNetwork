@@ -43,9 +43,9 @@ RESULT SUMMARY & DISPLAY
 		- standard output for each randomized benchmark 
 		- output for each bipartite partition
 			- note: points awarded on basis of use of illustrations (look pretty)
-*	- TABLE 
+#	- TABLE 
 		- for each graph (benchmark)
-*		- SEQUENTIAL COLORING PLOT	
+#		- SEQUENTIAL COLORING PLOT	
 			- degree when deleted (in the smallest order) vs original degree
 			- will require some code changes in the coloring algorithm
 *		- COLOR CLASS SIZE DISTRIBUTION
@@ -71,3 +71,5 @@ RESULT SUMMARY & DISPLAY
 
 PURPLE BUG ON SMALL GRAPHS?!?!
 	- might be spacebar being pressed when nodes are already drawn
+
+line 200 has changed (alg description in notebook must reflect that) (no longer only going over 4 spots) 

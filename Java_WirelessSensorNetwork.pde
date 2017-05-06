@@ -4,7 +4,7 @@ import java.util.*;
 int graphSize = 500;
 String mode = "square";
 int avgDegree = 3; //input from user
-int n = 100; // number of vertices (nodes)
+int n = 5; // number of vertices (nodes)
 float rotX = 0; // rotation
 float rotY = 0;
 float zoom = 300;
@@ -194,13 +194,20 @@ void setup() {
     largestColors = new int[numLargestColors];
     
     // find the four (at most) largest colors - store in largestColors
+    // print color distribution to output file
+    output.println();
+    output.println("Color Number, Percentage of Distribution");
     Set set = colorCount.entrySet();
     Iterator iterator = set.iterator();
     int itCount = 0;
-    while (iterator.hasNext() && itCount < numLargestColors) {
+    while (iterator.hasNext()) {
         Map.Entry c = (Map.Entry)iterator.next();
-        largestColors[itCount] = (int)c.getKey();
-        // println(c.getKey() + ": " + c.getValue());
+        if (itCount < numLargestColors)
+            largestColors[itCount] = (int)c.getKey();
+        
+        // ouput color and the number of times it occurs
+        output.println(c.getKey() + "," + ((int)c.getValue() * 1.0 / n));
+        
         itCount++;
     }
     
@@ -276,15 +283,13 @@ void setup() {
     // calculate time part 3 took
     endTime = System.nanoTime();
     println(((endTime - startTime)/1000000) + " ms to find backbones");  
-   
-   
-    //use BFS to draw nodes and edges
-    println("------------------------------------------------");
     
     // exist for drawing only
     BFS(largestStarterNodes[0], -1, largestColorCombos[0][0], largestColorCombos[0][1]); //<>//
     BFS(largestStarterNodes[1], -2, largestColorCombos[1][0], largestColorCombos[1][1]);
+
     
+    println("------------------------------------------------");
     println();
     //println("------------------------------------------------");
     ////print adjacency list
