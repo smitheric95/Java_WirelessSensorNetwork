@@ -316,7 +316,7 @@ void setup() {
     println(((endTime - startTime)/1000000) + " ms to find backbones");  
     
     // exist for drawing only
-    BFS(largestStarterNodes[0], -1, largestColorCombos[0][0], largestColorCombos[0][1]); //<>//
+    BFS(largestStarterNodes[0], -1, largestColorCombos[0][0], largestColorCombos[0][1]); //<>// //<>//
     BFS(largestStarterNodes[1], -2, largestColorCombos[1][0], largestColorCombos[1][1]);
 
     println("numEdges: " + numEdges);
@@ -381,9 +381,13 @@ void draw() {
             nodeDrawCount++;
         else if (userDrawLines){ 
             nodesDrawn = true;
-            lineDrawCount += n/20;
+            if (n > 20)
+                lineDrawCount += n/20;
+            else lineDrawCount = 20;
             if (userColorNodes)
-                colorDrawCount += n/20;
+                if (n > 20)
+                    colorDrawCount += n/20;
+                else colorDrawCount = 20; 
             if (userDrawFirstComponent && !firstComponentDrawn) {
                 firstComponentDrawn = true;
                 nodeDrawCount = n;   
@@ -513,7 +517,7 @@ int BFS(int v, int colorCombo, int c1, int c2) {
         /* Get all adjacent vertices of the dequeued vertex s
         If a adjacent has not been visited, then mark it
         visited and enqueue it */
-        ListNode curNode = vertexDict[v].neighbors.front; 
+        ListNode curNode = vertexDict[v].neighbors.front;  //<>//
         while (curNode != null) {
             // if the node hasn't been visited (or it needs to be drawn) 
             // and it's the right color, mark it visited
