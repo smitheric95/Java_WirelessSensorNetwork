@@ -2,9 +2,10 @@ import java.util.*;
 
 /* Globals */
 int graphSize = 500;
-String mode = "square";
+String mode = "disk";
 int avgDegree = 2; //input from user
 int n = 5; // number of vertices (nodes)
+int numEdges = 0;
 float rotX = 0; // rotation
 float rotY = 0;
 float zoom = 300;
@@ -318,10 +319,11 @@ void setup() {
     BFS(largestStarterNodes[0], -1, largestColorCombos[0][0], largestColorCombos[0][1]); //<>//
     BFS(largestStarterNodes[1], -2, largestColorCombos[1][0], largestColorCombos[1][1]);
 
-    
+    println("numEdges: " + numEdges);
     println("------------------------------------------------");
-    println();
-    //println("------------------------------------------------");
+    println("----------------- Summary Table ----------------");
+    //
+    println("------------------------------------------------");
     ////print adjacency list
     //print("Adjacency List: \n");
     //for (int j = 0; j < n; j++)
@@ -402,7 +404,6 @@ void draw() {
                 strokeWeight(0.0005);
         }
         
-        
         Vertex curVertex = vertexDict[i];
         
         if ((!userDrawFirstComponent && !userDrawSecondComponent) || (userDrawFirstComponent && curVertex.toDraw[0]) || (userDrawSecondComponent && curVertex.toDraw[1])) {
@@ -469,6 +470,8 @@ void sweepNodes() {
                     // add both to each other's linked lists
                     vertexDict[degreeDict[i]].neighbors.add(vertexDict[degreeDict[j]].ID);                       
                     vertexDict[degreeDict[j]].neighbors.add(vertexDict[degreeDict[i]].ID);
+                    
+                    numEdges++;
             }  
             
             j -= 1;

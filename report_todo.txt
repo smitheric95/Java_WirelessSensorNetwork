@@ -51,7 +51,7 @@ RESULT SUMMARY & DISPLAY
 #		- COLOR CLASS SIZE DISTRIBUTION
 			- percentages of each color ("distribution")
 *		- SUMMARY TABLE
-			- ID, N, R, M (numEdges), min degree, avg degree, max degree, 
+			- ID, N, R, M (numEdges), min degree, avg degree, real avg degree, max degree, 
 			  max degree when deleted, number of colors, size
 			  of largest color class, num edges in largest bipartite subgraph,
 			- if time permits:
@@ -77,3 +77,4 @@ line 200 has changed (alg description in notebook must reflect that)
 	no longer only going over 4 spots
 line 143 has changed (alg description in notebook must reflect that)
 	seeing if graph is complete
+get rid of useless functions like sweepnodes
