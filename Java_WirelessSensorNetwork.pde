@@ -2,11 +2,11 @@ import java.util.*;
 
 /* Globals */
 int graphSize = 500;
-String mode = "disk";
-int avgDegree = 64; //input from user
+String mode = "sphere";
+int avgDegree = 4; //input from user
 int totalDeg = 0; // for real avg degree
 int maxDegDeleted = -1;
-int n = 4000; // number of vertices (nodes)
+int n = 100; // number of vertices (nodes)
 int numEdges = 0;
 float rotX = 0; // rotation
 float rotY = 0;
@@ -73,11 +73,11 @@ void setup() {
         }
         else if (mode == "disk") {
             // generate random points on a disk
-            // http://stackoverflow.com/questions/5837572/generate-a-random-point-within-a-circle-uniformly
+            // http://stackoverflow.com/a/5838991
             float a = random.nextFloat();
             float b = random.nextFloat();
                 
-            // ensure a is greater by swapping
+            // ensure b is greater by swapping
             if (b < a) { float temp = b; b = a; a = temp; }
             
             fill(204, 102, 0);
@@ -99,8 +99,38 @@ void setup() {
         degreeDict[i] = i;
     }// end build map
     
+    /* build vertexDict using sweep method */
     // build adjacency list using sweep method
-    sweepNodes();
+    // sort degreeDict, which currently is an array of IDs in vertexDict, based on X positions
+    // to be sorted by another comparison later on
+    Arrays.sort(degreeDict, new Comparator<Integer>() {
+        public int compare(Integer v1, Integer v2) {
+            return Float.compare(vertexDict[v1].positionX, vertexDict[v2].positionX);
+        }
+    });
+   
+    // go through each vertex
+    for (int i = 0; i < n; i++) {
+        int j = i-1;
+        
+        // if the vertex to left is within range, calculate distance
+        while ((j >= 0) && (vertexDict[degreeDict[i]].positionX - vertexDict[degreeDict[j]].positionX <= R)) {
+            // calculate distance based off topology
+            if (dist(vertexDict[degreeDict[i]].positionX, vertexDict[degreeDict[i]].positionY, vertexDict[degreeDict[i]].positionZ, 
+                     vertexDict[degreeDict[j]].positionX, vertexDict[degreeDict[j]].positionY, vertexDict[degreeDict[j]].positionZ) <= R) {
+                    
+                    // add both to each other's linked lists
+                    vertexDict[degreeDict[i]].neighbors.add(vertexDict[degreeDict[j]].ID);                       
+                    vertexDict[degreeDict[j]].neighbors.add(vertexDict[degreeDict[i]].ID);
+                    
+                    numEdges++;
+            }  
+            
+            j -= 1;
+            
+        } // end while
+    } // end for
+    /* end sweep method */
     
     // calculate time part 2 took
     long endTime = System.nanoTime();
@@ -475,39 +505,7 @@ void draw() {
 
     popMatrix();
 } // end draw()
-
-// build vertexDict using sweep method
-void sweepNodes() {
-    // sort degreeDict, which currently is an array of IDs in vertexDict, based on X positions
-    // to be sorted by another comparison later on
-    Arrays.sort(degreeDict, new Comparator<Integer>() {
-        public int compare(Integer v1, Integer v2) {
-            return Float.compare(vertexDict[v1].positionX, vertexDict[v2].positionX);
-        }
-    });
-   
-    // go through each vertex
-    for (int i = 0; i < n; i++) {
-        int j = i-1;
-        
-        // if the vertex to left is within range, calculate distance
-        while ((j >= 0) && (vertexDict[degreeDict[i]].positionX - vertexDict[degreeDict[j]].positionX <= R)) {
-            // calculate distance based off topology
-            if (dist(vertexDict[degreeDict[i]].positionX, vertexDict[degreeDict[i]].positionY, vertexDict[degreeDict[i]].positionZ, 
-                     vertexDict[degreeDict[j]].positionX, vertexDict[degreeDict[j]].positionY, vertexDict[degreeDict[j]].positionZ) <= R) {
-                    
-                    // add both to each other's linked lists
-                    vertexDict[degreeDict[i]].neighbors.add(vertexDict[degreeDict[j]].ID);                       
-                    vertexDict[degreeDict[j]].neighbors.add(vertexDict[degreeDict[i]].ID);
-                    
-                    numEdges++;
-            }  
             
-            j -= 1;
-            
-        } // end while
-    } // end for
-}             
 // returns radius of a point based average degree
 // check video to see if accurate
 double calculateRadius() {

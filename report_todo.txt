@@ -6,7 +6,7 @@ lowercase = implied component
 EXECUTIVE SUMMARY
 *	- INTRODUCTION
 		- marketing effort
-#	- PROGRAMMING ENVIRONMENT DESCRIPTION
+/	- PROGRAMMING ENVIRONMENT DESCRIPTION
 		- was it overkill?
  		- interaction between system components needed for efficiency and display
 		# Description of program for graphs/tables
@@ -22,7 +22,7 @@ EXECUTIVE SUMMARY
 CORE
 #	- REDUCTION TO PRACTICE
 		- FIVE COMPONENTS ("appropriately integrated")
-#			- DATA STRUCTURE DESIGN
+/			- DATA STRUCTURE DESIGN
 				# copy from notebook
 #			- ALGORITHM DESCRIPTIONS
 				# copy from notebook
@@ -39,7 +39,7 @@ CORE
 
 
 RESULT SUMMARY & DISPLAY
-*	- OUTPUT
+#	- OUTPUT
 		- standard output for each randomized benchmark 
 		- output for each bipartite partition
 			- note: points awarded on basis of use of illustrations (look pretty)
@@ -55,7 +55,7 @@ RESULT SUMMARY & DISPLAY
 			  max degree when deleted, number of colors, size
 			  of largest color class, terminal clique size, num edges in largest bipartite subgraph,
 
-*		- BACKBONE SELECTION PROCEDURES AND DISPLAYS
+#		- BACKBONE SELECTION PROCEDURES AND DISPLAYS
 			- for each benchmark:
 				- screenshot (if necessary)
 					- number of vertices
@@ -72,4 +72,5 @@ line 200 has changed (alg description in notebook must reflect that)
 	no longer only going over 4 spots
 line 143 has changed (alg description in notebook must reflect that)
 	seeing if graph is complete
-get rid of useless functions like sweepnodes
+
+clean up code
