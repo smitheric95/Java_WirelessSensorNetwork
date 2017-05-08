@@ -1,12 +1,16 @@
 import java.util.*;
 
+/******* INPUT ********/
+int avgDegree = 10; 
+String mode = "sphere"; // square, disk, sphere
+int n = 1001; // number of vertices (nodes)
+/**********************/
+
 /* Globals */
+double R = 0; // calculated in calculateRadius
 int graphSize = 500;
-String mode = "sphere";
-int avgDegree = 4; //input from user
 int totalDeg = 0; // for real avg degree
 int maxDegDeleted = -1;
-int n = 100; // number of vertices (nodes)
 int numEdges = 0;
 float rotX = 0; // rotation
 float rotY = 0;
@@ -47,9 +51,6 @@ boolean userDrawLines = false,
         firstComponentDrawn = false,
         cliqueDetermined = false;
 
- 
-double R = 0; // calculated in calculateRadius
-
 void setup() {
     long startTime = System.nanoTime();
     smooth();
@@ -59,8 +60,8 @@ void setup() {
     // create output file
     outputSequential = createWriter("output/outputSequential_" + n + "_" + avgDegree + "_" + mode + ".csv");
     outputDistribution = createWriter("output/outputDistribution_" + n + "_" + avgDegree + "_" + mode + ".csv");
+    
     /**************************** PART I *******************************/
-    R = calculateRadius(); // calculate radius based off avgDegree
     
     // build map of nodes
     for(int i = 0; i < n; i++) {  
@@ -99,8 +100,9 @@ void setup() {
         degreeDict[i] = i;
     }// end build map
     
-    /* build vertexDict using sweep method */
-    // build adjacency list using sweep method
+    R = calculateRadius(); // calculate radius based off avgDegree
+    
+    // build vertexDict using sweep method
     // sort degreeDict, which currently is an array of IDs in vertexDict, based on X positions
     // to be sorted by another comparison later on
     Arrays.sort(degreeDict, new Comparator<Integer>() {
@@ -138,6 +140,7 @@ void setup() {
     
     /************************** END PART I *****************************/
     
+    
     /**************************** PART II *******************************/
     startTime = System.nanoTime(); // reset our time counter
     
@@ -156,6 +159,7 @@ void setup() {
 
     
     outputSequential.println("Original Degree, Degree when Deleted");
+    
     /***** generate colorDict *****/
     // start at the lowest degree 
     int degreeIndex = degreeDict.length - 1;
@@ -214,7 +218,6 @@ void setup() {
         if (curDegree > maxDegDeleted)
             maxDegDeleted = curDegree;
         
-        //println(
         degreeIndex--;
     }
     /*** colorDict generated ***/
@@ -359,42 +362,16 @@ void setup() {
     int minDeg = vertexDict[degreeDict[degreeDict.length-1]].neighbors.getSize();
     int maxDeg = vertexDict[0].neighbors.getSize();
     
-    println("numEdges: " + numEdges);
-    println("------------------------------------------------");
-    println("----------------- Summary Table ----------------");
+    // println("----------------- Summary Table ----------------");
     // N, R, M (numEdges), min degree, avg degree, real avg degree, max degree,
     // max degree when deleted, number of colors, size of largest color class
     // terminal clique size, n of largest backbone, m of largest backbone, domination percentage
     
-    println(n, R, numEdges, minDeg, avgDegree, totalDeg/n, maxDeg);
-    println(maxDegDeleted, colorCount.size(), largestSizes[0], terminalCliqueSize, largestSizes[0], largestSizes[0] - 1, (largestSizes[0]*1.0)/n);
-    println("------------------------------------------------");
-    println();
+    //println(n, R, numEdges, minDeg, avgDegree, totalDeg/n, maxDeg);
+    //println(maxDegDeleted, colorCount.size(), largestSizes[0], terminalCliqueSize, largestSizes[0], largestSizes[0] - 1, (largestSizes[0]*1.0)/n);
+    //println("------------------------------------------------");
     
-    ////print adjacency list
-    //print("Adjacency List: \n");
-    //for (int j = 0; j < n; j++)
-    //    vertexDict[j].printVertex();
-    //println("------------------------------------------------");
-    //print("Degree List: \n");
-    //for (int j = 0; j < n; j++) 
-    //    vertexDict[degreeDict[j]].printVertex();
-    //println("------------------------------------------------");
-    //println("Color Dict: ");
-    //for (int j = 0; j < n; j++) 
-    //    colorDict[j].printList();
-    //println("------------------------------------------------");
-    //println("Largest colors: ");
-    //for (int j = 0; j < largestColors.length; j++) println(largestColors[j]);
-    //println("------------------------------------------------");
-    //println("Color Combos: ");
-    //for (int k = 0; k < colorCombos.length; k++) {
-    //    for (int l = 0; l < colorCombos[k].length; l++) {
-    //        print(colorCombos[k][l] + " ");
-    //    }
-    //    println();
-    //}
-     
+    println(); 
     println("1st Largest subgraph starts at: " + largestStarterNodes[0] + " with a size of: " + largestSizes[0] + " and of color combo of " + largestColorCombos[0][0] + ", " + largestColorCombos[0][1]); 
     println("2nd Largest subgraph starts at: " + largestStarterNodes[1] + " with a size of: " + largestSizes[1] + " and of color combo of " + largestColorCombos[1][0] + ", " + largestColorCombos[1][1]);
     
@@ -413,7 +390,6 @@ void draw() {
     rotate(angle);
     noFill();
     background(0);
-    
     
     // rotate matrix based off mouse movement
     rotateX(rotX);
@@ -573,34 +549,36 @@ int BFS(int v, int colorCombo, int c1, int c2) {
 
 // find the smallest missing element in a sorted array
 // http://www.programcreek.com/2014/05/leetcode-first-missing-positive-java/
+// this function was copied directly from its source
 public int firstMissingPositive(int[] A) {
-        int n = A.length;
+    int n = A.length;
  
-        for (int i = 0; i < n; i++) {
-            while (A[i] != i + 1) {
-                if (A[i] <= 0 || A[i] >= n)
-                    break;
+    for (int i = 0; i < n; i++) {
+        while (A[i] != i + 1) {
+            if (A[i] <= 0 || A[i] >= n)
+                break;
  
-                    if(A[i]==A[A[i]-1])
-                            break;
+                if(A[i]==A[A[i]-1])
+                        break;
  
-                int temp = A[i];
-                A[i] = A[temp - 1];
-                A[temp - 1] = temp;
-            }
+            int temp = A[i];
+            A[i] = A[temp - 1];
+            A[temp - 1] = temp;
         }
+    }
  
-        for (int i = 0; i < n; i++){
-            if (A[i] != i + 1){
-                return i + 1;
-            }
-        }    
+    for (int i = 0; i < n; i++){
+        if (A[i] != i + 1){
+            return i + 1;
+        }
+    }    
  
-        return n + 1;
+    return n + 1;
 }
 
 // sort HashMap by value
 // source: http://beginnersbook.com/2013/12/how-to-sort-hashmap-in-java-by-keys-and-values/
+// this function was copied directly from its source
 private static HashMap sortByValues(HashMap map) { 
        List list = new java.util.LinkedList(map.entrySet());
        // Defined Custom Comparator here
@@ -623,6 +601,7 @@ private static HashMap sortByValues(HashMap map) {
   
 // x choose y
 // source: http://stackoverflow.com/a/1678715
+// this function was copied directly from its source
 public static double choose(int x, int y) {
     if (y < 0 || y > x) return 0;
     if (y > x/2) {
