@@ -5,6 +5,7 @@ From there, the program has the ability to “color” each node based off its n
 Finally, the program can display the largest backbone of the graph, i.e. the structure that connects the largest amount of nodes on the network. 
 
 For a more detailed explanation of this program including performance statistics and a reduction to practice, please see Smith_WSN.pdf.
+
 Please read it. It took me forever to write.
 
 ## How to Run:
@@ -12,9 +13,9 @@ Please read it. It took me forever to write.
 Navigate to the application folder for your operating system and run the executable!
 
 ## Controls:
-*Press space to navigate through the different steps.
-*Up/down arrows to zoom
-*Mouse to drag 
+* Press space to navigate through the different steps.
+* Up/down arrows to zoom
+* Mouse to drag 
 
 ## Changing variables:
 
