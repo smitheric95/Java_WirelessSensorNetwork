@@ -1,8 +1,8 @@
 import java.util.*;
 
 /******* INPUT ********/
-int avgDegree = 10; 
-String mode = "sphere"; // square, disk, sphere
+int avgDegree = 15; 
+String mode = "sphere"; // options: square, disk, sphere
 int n = 1001; // number of vertices (nodes)
 /**********************/
 
@@ -400,7 +400,7 @@ void draw() {
     if (millis() > time){
         if (!firstComponentDrawn)
             time = millis() + 1;
-        if (nodeDrawCount < n) // replace with press space!
+        if (nodeDrawCount < n)
             nodeDrawCount++;
         else if (userDrawLines){ 
             nodesDrawn = true;
