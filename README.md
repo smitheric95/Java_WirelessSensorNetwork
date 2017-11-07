@@ -18,6 +18,7 @@ Finally, the program can display the two largest backbones of the graph, i.e. th
 ![Second Largest Bipartite](Screenshots/5.png)
 
 The program supports spheres, disks, and squares.
+
 ![Disk](Screenshots/6.png)
 ![Square](Screenshots/7.png)
 
