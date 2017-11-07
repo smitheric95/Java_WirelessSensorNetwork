@@ -2,7 +2,7 @@ import java.util.*;
 
 /******* INPUT ********/
 int avgDegree = 32; 
-String mode = "square"; // options: square, disk, sphere
+String mode = "sphere"; // options: square, disk, sphere
 int n = 1001; // number of vertices (nodes)
 /**********************/
 
@@ -349,7 +349,7 @@ void setup() {
             // reduce the remaining nodes to visit
             numNodesVisited += curSize;
         }
-    } //<>//
+    }
     // calculate time part 3 took
     endTime = System.nanoTime();
     println(((endTime - startTime)/1000000) + " ms to find backbones");  
@@ -491,7 +491,7 @@ double calculateRadius() {
     else if (mode == "disk") {
         return Math.sqrt( avgDegree*1.0/n );
     }
-    else {  //<>//
+    else { 
         return Math.sqrt( 4*avgDegree*1.0/n );
     }
 }
@@ -520,7 +520,7 @@ int BFS(int v, int colorCombo, int c1, int c2) {
         while (curNode != null) {
             // if the node hasn't been visited (or it needs to be drawn) 
             // and it's the right color, mark it visited
-            if (((colorCombo > -1 && !vertexDict[curNode.ID].visited[colorCombo]) || ((colorCombo == -1 && !vertexDict[curNode.ID].visitedWhileDrawn[0]) || (colorCombo == -2 && !vertexDict[curNode.ID].visitedWhileDrawn[1])))  //<>//
+            if (((colorCombo > -1 && !vertexDict[curNode.ID].visited[colorCombo]) || ((colorCombo == -1 && !vertexDict[curNode.ID].visitedWhileDrawn[0]) || (colorCombo == -2 && !vertexDict[curNode.ID].visitedWhileDrawn[1]))) 
                 && (vertexDict[curNode.ID].nodeColor == c1 || vertexDict[curNode.ID].nodeColor == c2)) {
                 // mark the node as visited
                 if (colorCombo > -1)

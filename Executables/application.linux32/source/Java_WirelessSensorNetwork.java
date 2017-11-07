@@ -1,8 +1,26 @@
-import java.util.*;
+import processing.core.*; 
+import processing.data.*; 
+import processing.event.*; 
+import processing.opengl.*; 
+
+import java.util.*; 
+
+import java.util.HashMap; 
+import java.util.ArrayList; 
+import java.io.File; 
+import java.io.BufferedReader; 
+import java.io.PrintWriter; 
+import java.io.InputStream; 
+import java.io.OutputStream; 
+import java.io.IOException; 
+
+public class Java_WirelessSensorNetwork extends PApplet {
+
+
 
 /******* INPUT ********/
 int avgDegree = 32; 
-String mode = "square"; // options: square, disk, sphere
+String mode = "sphere"; // options: square, disk, sphere
 int n = 1001; // number of vertices (nodes)
 /**********************/
 
@@ -19,7 +37,7 @@ float angle = 0; // rotation with keyboard
 Vertex[] vertexDict = new Vertex[n]; // adjacency list of vertices and their neighbors
 Integer[] degreeDict = new Integer[n]; // ordered by smallest degree last, array of indices in vertexDict
 int numNotDeleted = n, terminalCliqueSize = 0; // calculating terminal clique  
-float nodeStrokeWeight = 0.0, edgeStrokeWeight = 0.0;
+float nodeStrokeWeight = 0.0f, edgeStrokeWeight = 0.0f;
 
 // output files for creating graphs as needed
 PrintWriter outputSequential, outputDistribution;
@@ -33,7 +51,7 @@ int[] largestColors;
 int[][] colorCombos; // all possible combinations of the n most popular colors 
 
 // NOTE: not always "color i"
-color[] largestColorRGBs = { 
+int[] largestColorRGBs = { 
     // blue, green, yellow, red
     color(0, 0, 255), color(0, 255, 0), color(255,255,0), color(255, 0, 0), 
 };
@@ -51,10 +69,10 @@ boolean userDrawLines = false,
         firstComponentDrawn = false,
         cliqueDetermined = false;
 
-void setup() {
+public void setup() {
     long startTime = System.nanoTime();
-    smooth();
-    size(840, 840, P3D); // set size of window
+    
+     // set size of window
     surface.setTitle("Drawing Vertices...");
     
     // create output file
@@ -69,8 +87,8 @@ void setup() {
         Random random = new Random();
         
         if (mode == "square") {
-            v.positionX = random.nextFloat() - 0.5;
-            v.positionY = random.nextFloat() - 0.5;
+            v.positionX = random.nextFloat() - 0.5f;
+            v.positionY = random.nextFloat() - 0.5f;
         }
         else if (mode == "disk") {
             // generate random points on a disk
@@ -277,7 +295,7 @@ void setup() {
             largestColors[itCount] = (int)c.getKey();
         
         // ouput color and the number of times it occurs
-        outputDistribution.println(c.getKey() + "," + ((int)c.getValue() * 1.0 / n));
+        outputDistribution.println(c.getKey() + "," + ((int)c.getValue() * 1.0f / n));
         itCount++;
     }
     
@@ -349,7 +367,7 @@ void setup() {
             // reduce the remaining nodes to visit
             numNodesVisited += curSize;
         }
-    } //<>//
+    }
     // calculate time part 3 took
     endTime = System.nanoTime();
     println(((endTime - startTime)/1000000) + " ms to find backbones");  
@@ -382,7 +400,7 @@ void setup() {
     outputDistribution.close(); 
 }
 
-void draw() {
+public void draw() {
     // put matrix in center
     pushMatrix();
     translate(width/2, height/2);
@@ -423,16 +441,16 @@ void draw() {
     int colorsDrawn = colorDrawCount;
     
     // calculate stroke weight depending on graph type and size
-    nodeStrokeWeight = 0.03;
-    edgeStrokeWeight = 0.005;
+    nodeStrokeWeight = 0.03f;
+    edgeStrokeWeight = 0.005f;
     if ((!userDrawFirstComponent && !userDrawSecondComponent)) {
         if (n > 1000) {
-            nodeStrokeWeight = 0.02;
-            edgeStrokeWeight = 0.001;
+            nodeStrokeWeight = 0.02f;
+            edgeStrokeWeight = 0.001f;
         }
         else if (n > 10000) {
-            nodeStrokeWeight = 0.0001;
-            edgeStrokeWeight = 0.00001;
+            nodeStrokeWeight = 0.0001f;
+            edgeStrokeWeight = 0.00001f;
         }
     }
     if (mode == "square") {
@@ -484,15 +502,15 @@ void draw() {
             
 // returns radius of a point based average degree
 // check video to see if accurate
-double calculateRadius() {
+public double calculateRadius() {
     if (mode == "square") {
-        return Math.sqrt( (avgDegree*1.0/(n*Math.PI)) );
+        return Math.sqrt( (avgDegree*1.0f/(n*Math.PI)) );
     }
     else if (mode == "disk") {
-        return Math.sqrt( avgDegree*1.0/n );
+        return Math.sqrt( avgDegree*1.0f/n );
     }
-    else {  //<>//
-        return Math.sqrt( 4*avgDegree*1.0/n );
+    else { 
+        return Math.sqrt( 4*avgDegree*1.0f/n );
     }
 }
 
@@ -500,7 +518,7 @@ double calculateRadius() {
 // edited from source: http://www.geeksforgeeks.org/breadth-first-traversal-for-a-graph/
 // colorCombo == -1 if the node is to be drawn (part of the 1st largest componenent)
 // colorCombo == -2 if the node is to be drawn (part of the 2nd largest componenent)
-int BFS(int v, int colorCombo, int c1, int c2) {
+public int BFS(int v, int colorCombo, int c1, int c2) {
     java.util.LinkedList<Integer> queue = new java.util.LinkedList<Integer>(); 
     int count = 0; // number of nodes visited
     
@@ -520,7 +538,7 @@ int BFS(int v, int colorCombo, int c1, int c2) {
         while (curNode != null) {
             // if the node hasn't been visited (or it needs to be drawn) 
             // and it's the right color, mark it visited
-            if (((colorCombo > -1 && !vertexDict[curNode.ID].visited[colorCombo]) || ((colorCombo == -1 && !vertexDict[curNode.ID].visitedWhileDrawn[0]) || (colorCombo == -2 && !vertexDict[curNode.ID].visitedWhileDrawn[1])))  //<>//
+            if (((colorCombo > -1 && !vertexDict[curNode.ID].visited[colorCombo]) || ((colorCombo == -1 && !vertexDict[curNode.ID].visitedWhileDrawn[0]) || (colorCombo == -2 && !vertexDict[curNode.ID].visitedWhileDrawn[1]))) 
                 && (vertexDict[curNode.ID].nodeColor == c1 || vertexDict[curNode.ID].nodeColor == c2)) {
                 // mark the node as visited
                 if (colorCombo > -1)
@@ -610,7 +628,7 @@ public static double choose(int x, int y) {
         y = x - y;
     }
 
-    double denominator = 1.0, numerator = 1.0;
+    double denominator = 1.0f, numerator = 1.0f;
     for (int i = 1; i <= y; i++) {
         denominator *= i;
         numerator *= (x + 1 - i);
@@ -618,12 +636,12 @@ public static double choose(int x, int y) {
     return numerator / denominator;
 }
 
-void mouseDragged() {
-    rotX += (pmouseY-mouseY) * 0.1;
-    rotY += -1 * (pmouseX-mouseX) * 0.1;
+public void mouseDragged() {
+    rotX += (pmouseY-mouseY) * 0.1f;
+    rotY += -1 * (pmouseX-mouseX) * 0.1f;
 }
 
-void keyPressed() {
+public void keyPressed() {
     // https://forum.processing.org/two/discussion/2151/zoom-in-and-out
     if (keyCode == UP) {
         zoom += 20;
@@ -632,10 +650,10 @@ void keyPressed() {
         zoom -= 20;
     }
     else if (keyCode == RIGHT) {
-        angle += .03;
+        angle += .03f;
     }
     else if (keyCode == LEFT) {
-        angle -= .03;
+        angle -= .03f;
     }
     if (key == 32) { // space
         if (userDrawSecondComponent) {
@@ -667,3 +685,150 @@ void keyPressed() {
     }
 }
     
+public class LinkedList {
+    ListNode front;
+    ListNode back;
+	
+    private int size;
+    
+    public LinkedList() {
+        this.size = 0;
+        this.front = null;
+        this.back = null;
+    }
+    
+    // add to front
+    public void add(int ID) {
+        ListNode node = new ListNode(ID);
+        node.next = this.front;
+        this.front = node;
+        if (this.back == null)
+            this.back = this.front;
+            
+        this.size++;
+    }
+    
+    // add directly to back
+    public void append(int ID) {
+        ListNode node = new ListNode(ID);
+        if (this.back != null)
+            this.back.next = node;
+            
+        this.back = node;
+        
+        if (this.front == null) 
+            this.front = node;
+            
+        this.size++;
+    }
+    
+    public void printList() {
+        ListNode cur = this.front;
+        
+        System.out.print("    ");
+        while (cur != null) {
+            System.out.print("[" + cur.ID + "]->");
+            cur = cur.getNext();
+        }
+        System.out.println("X\n");
+    }
+    
+    // delete from list and return whether it got delted 
+    public boolean delete(int ID) {
+        // empty list
+        if (this.size == 0) 
+            return false;
+
+        ListNode cur = this.front;
+        
+        // delete head
+        if (cur.ID == ID) {
+            this.front = cur.next;
+        }
+        
+        // loop till we find node with the right ID
+        while (cur.next != null) {
+            if (cur.next.ID == ID) {
+                cur.next = cur.next.next; // delete
+                return true;
+            }
+            cur = cur.next;
+        }
+        
+        // node not found
+        return false;
+    }
+    
+    public ListNode getFront() {
+        return this.front;
+    }
+    
+    public int getSize() {
+        return this.size;
+    }
+}
+public class ListNode {
+    int ID; // index in vertexDict 
+    ListNode next;
+    
+    public ListNode(int ID) {
+        this.ID = ID;
+        this.next = null;
+    }
+    
+    public ListNode getNext() {
+        return this.next;
+    }
+   
+}
+public class Vertex {
+    int ID;
+    float positionX;
+    float positionY;
+    float positionZ;
+    LinkedList neighbors;
+    private boolean sortByDegree;
+    boolean deleted; // pseudo deleted for coloring
+    int nodeColor;
+    boolean[] visited; // for calculating largest backbone (index for each color combo)
+    boolean[] visitedWhileDrawn;
+    boolean[] toDraw; // whether or not to draw the vertex
+    
+    public Vertex(int ID) {
+        this.ID = ID;   
+        this.positionX = 0;
+        this.positionY = 0;
+        this.positionZ = 0;
+        this.sortByDegree = false;
+        this.neighbors = new LinkedList();
+        this.deleted = false;
+        this.nodeColor = 0;
+        this.visited = new boolean[6];
+        this.toDraw = new boolean[2];
+        this.visitedWhileDrawn = new boolean[2];    
+    }
+    
+    public int getNumNeighbors() {
+        return this.neighbors.size;
+    }
+    
+    public void drawVertex() {
+        //strokeWeight(0.05);
+        point(this.positionX, this.positionY, this.positionZ);
+    }
+    
+    public void printVertex() {
+        System.out.println("[" + this.ID + " (" + this.toString().substring(33, this.toString().length()) + ")]: " + this.positionX + ", " + this.positionY + ", " + this.positionZ + " Color: " + this.nodeColor);
+        this.neighbors.printList();
+    }
+}
+    public void settings() {  size(840, 840, P3D);  smooth(); }
+    static public void main(String[] passedArgs) {
+        String[] appletArgs = new String[] { "--present", "--window-color=#666666", "--stop-color=#cccccc", "Java_WirelessSensorNetwork" };
+        if (passedArgs != null) {
+          PApplet.main(concat(appletArgs, passedArgs));
+        } else {
+          PApplet.main(appletArgs);
+        }
+    }
+}
