@@ -11,7 +11,7 @@ public class LinkedList {
     }
     
     // add to front
-    public void add(int ID) {
+    public void leftAdd(int ID) {
         ListNode node = new ListNode(ID);
         node.next = this.front;
         this.front = node;
