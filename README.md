@@ -1,6 +1,9 @@
 # Wireless Sensor Network Simulator
 
-This simulation is able to distribute nodes on the surfaces of multiple shapes - representing different network topologies.
+This project was for my CSE 7350 Algorithm Engineering course. This program calculates the largest bipartite subgraph of the given topology.
+
+
+The simulation is able to distribute nodes on the surfaces of multiple shapes - representing different network topologies.
 
 ![Drawing Vertices](Screenshots/1.png)
 
